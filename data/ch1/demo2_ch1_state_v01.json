@@ -1,0 +1,713 @@
+{
+  "schema_version": "1.0",
+  "id": "demo2_ch1_state",
+  "version": "v01",
+  "title": "第一章 南宋意难平｜运行时状态契约",
+  "status": "draft-for-integration",
+  "source_docs": [
+    "制作包/00_第一章垂直切片冻结表.md",
+    "产出物/第一章南宋意难平Demo2设定方案.md"
+  ],
+  "design_rules": {
+    "demo1_preserved": true,
+    "offline_playable": true,
+    "failure_mode": "no_game_over_recent_node_retry",
+    "timeline_anchor": "1122到1142为二十年倒计时；1141召回诏书为可介入节点；1142为结点；1161为辛弃疾入口"
+  },
+  "initial_state": {
+    "current_scene_id": "s01_modern_article",
+    "timeline": "canonical",
+    "year": 2026,
+    "player_age": null,
+    "article_progress": 72,
+    "countdown_start_year": 1122,
+    "countdown_end_year": 1142,
+    "countdown_years_remaining": 20,
+    "knows_yuefei_fate": false,
+    "evidence_completeness": 0,
+    "clues_found": [],
+    "inquiry_count": 0,
+    "inquiry_types": [],
+    "trust_public": 0,
+    "trust_military": 0,
+    "action_tendency": 0,
+    "knowledge_debt": 0,
+    "testimony_saved": false,
+    "warning_delivered": false,
+    "recall_delayed": false,
+    "intervention_attempted": false,
+    "continuation_choice": null,
+    "ending_id": null,
+    "xinqiji_intro_seen": false
+  },
+  "variables": {
+    "current_scene_id": {
+      "type": "string",
+      "default": "s01_modern_article",
+      "description": "当前内容节点 ID"
+    },
+    "timeline": {
+      "type": "enum",
+      "values": [
+        "canonical",
+        "divergent",
+        "truth"
+      ],
+      "default": "canonical",
+      "description": "当前时间线结果；1142 结点时写入"
+    },
+    "year": {
+      "type": "integer",
+      "default": 2026,
+      "description": "当前叙事年份"
+    },
+    "player_age": {
+      "type": "integer_or_null",
+      "default": null,
+      "description": "玩家在历史中的年龄；1122 段固定为 2"
+    },
+    "article_progress": {
+      "type": "integer",
+      "min": 0,
+      "max": 100,
+      "default": 72,
+      "description": "现代知乎文章阅读进度"
+    },
+    "countdown_years_remaining": {
+      "type": "integer",
+      "min": 0,
+      "max": 20,
+      "default": 20,
+      "description": "从 1122 到 1142 的倒计时"
+    },
+    "knows_yuefei_fate": {
+      "type": "boolean",
+      "default": false,
+      "description": "是否明确知道岳飞 1142 年离世"
+    },
+    "evidence_completeness": {
+      "type": "integer",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "description": "四类关键线索的交叉验证数量"
+    },
+    "clues_found": {
+      "type": "string_array",
+      "default": [],
+      "description": "已取得的线索 ID"
+    },
+    "inquiry_count": {
+      "type": "integer",
+      "min": 0,
+      "max": 99,
+      "default": 0,
+      "description": "向刘看山提出的有效问题次数"
+    },
+    "inquiry_types": {
+      "type": "string_array",
+      "default": [],
+      "description": "已覆盖 fact/context/counterfactual 的问题类型"
+    },
+    "trust_public": {
+      "type": "integer",
+      "min": 0,
+      "max": 3,
+      "default": 0,
+      "description": "普通人对玩家可信度"
+    },
+    "trust_military": {
+      "type": "integer",
+      "min": 0,
+      "max": 3,
+      "default": 0,
+      "description": "军中关键接收者对玩家可信度"
+    },
+    "action_tendency": {
+      "type": "integer",
+      "min": -2,
+      "max": 2,
+      "default": 0,
+      "description": "负值偏见证，正值偏介入"
+    },
+    "knowledge_debt": {
+      "type": "integer",
+      "min": 0,
+      "max": 5,
+      "default": 0,
+      "description": "玩家改变历史引入的新风险"
+    },
+    "testimony_saved": {
+      "type": "boolean",
+      "default": false,
+      "description": "是否保存普通人的证言"
+    },
+    "warning_delivered": {
+      "type": "boolean",
+      "default": false,
+      "description": "召回预警是否可靠抵达关键接收者"
+    },
+    "recall_delayed": {
+      "type": "boolean",
+      "default": false,
+      "description": "召回是否被延迟或未执行"
+    },
+    "intervention_attempted": {
+      "type": "boolean",
+      "default": false,
+      "description": "玩家是否在 1141 节点尝试介入"
+    },
+    "continuation_choice": {
+      "type": "enum_or_null",
+      "values": [
+        "leave",
+        "continue"
+      ],
+      "default": null,
+      "description": "1142 结点后的离开/继续选择"
+    },
+    "ending_id": {
+      "type": "string_or_null",
+      "default": null,
+      "description": "结局 ID"
+    },
+    "xinqiji_intro_seen": {
+      "type": "boolean",
+      "default": false,
+      "description": "是否完成 1161 辛弃疾入口"
+    }
+  },
+  "conditions": {
+    "clue_family_letter": {
+      "all": [
+        {
+          "contains": [
+            "clues_found",
+            "family_letter"
+          ]
+        }
+      ]
+    },
+    "clue_military_order": {
+      "all": [
+        {
+          "contains": [
+            "clues_found",
+            "military_order"
+          ]
+        }
+      ]
+    },
+    "clue_route_map": {
+      "all": [
+        {
+          "contains": [
+            "clues_found",
+            "route_map"
+          ]
+        }
+      ]
+    },
+    "clue_civilian_testimony": {
+      "all": [
+        {
+          "contains": [
+            "clues_found",
+            "civilian_testimony"
+          ]
+        }
+      ]
+    },
+    "all_four_clues": {
+      "all": [
+        {
+          "gte": [
+            "evidence_completeness",
+            4
+          ]
+        }
+      ]
+    },
+    "three_inquiry_types": {
+      "all": [
+        {
+          "gte": [
+            "inquiry_count",
+            3
+          ]
+        },
+        {
+          "contains": [
+            "inquiry_types",
+            "fact"
+          ]
+        },
+        {
+          "contains": [
+            "inquiry_types",
+            "context"
+          ]
+        },
+        {
+          "contains": [
+            "inquiry_types",
+            "counterfactual"
+          ]
+        }
+      ]
+    },
+    "military_trust_ready": {
+      "all": [
+        {
+          "gte": [
+            "trust_military",
+            2
+          ]
+        }
+      ]
+    },
+    "public_trust_ready": {
+      "all": [
+        {
+          "gte": [
+            "trust_public",
+            1
+          ]
+        }
+      ]
+    },
+    "information_chain_complete": {
+      "all": [
+        {
+          "contains": [
+            "clues_found",
+            "military_order"
+          ]
+        },
+        {
+          "contains": [
+            "clues_found",
+            "route_map"
+          ]
+        },
+        {
+          "gte": [
+            "trust_military",
+            2
+          ]
+        }
+      ]
+    },
+    "divergent_ready": {
+      "all": [
+        {
+          "eq": [
+            "warning_delivered",
+            true
+          ]
+        },
+        {
+          "eq": [
+            "recall_delayed",
+            true
+          ]
+        }
+      ]
+    },
+    "truth_ready": {
+      "all": [
+        {
+          "gte": [
+            "evidence_completeness",
+            4
+          ]
+        },
+        {
+          "gte": [
+            "inquiry_count",
+            3
+          ]
+        },
+        {
+          "eq": [
+            "testimony_saved",
+            true
+          ]
+        },
+        {
+          "lte": [
+            "knowledge_debt",
+            2
+          ]
+        }
+      ]
+    },
+    "leave_selected": {
+      "all": [
+        {
+          "eq": [
+            "continuation_choice",
+            "leave"
+          ]
+        }
+      ]
+    },
+    "continue_selected": {
+      "all": [
+        {
+          "eq": [
+            "continuation_choice",
+            "continue"
+          ]
+        }
+      ]
+    },
+    "always_after_1142": {
+      "all": [
+        {
+          "gte": [
+            "year",
+            1142
+          ]
+        }
+      ]
+    }
+  },
+  "effects_catalog": {
+    "set_baby_state": {
+      "set": {
+        "year": 1122,
+        "player_age": 2,
+        "countdown_years_remaining": 20
+      }
+    },
+    "reveal_fate": {
+      "set": {
+        "knows_yuefei_fate": true
+      }
+    },
+    "advance_to_1127": {
+      "set": {
+        "year": 1127,
+        "player_age": 7,
+        "countdown_years_remaining": 15
+      }
+    },
+    "advance_to_1141": {
+      "set": {
+        "year": 1141,
+        "player_age": 21,
+        "countdown_years_remaining": 1
+      }
+    },
+    "advance_to_1142": {
+      "set": {
+        "year": 1142,
+        "countdown_years_remaining": 0
+      }
+    },
+    "advance_to_1161": {
+      "set": {
+        "year": 1161,
+        "player_age": 41,
+        "xinqiji_intro_seen": true
+      }
+    },
+    "ask_fact": {
+      "increment": {
+        "inquiry_count": 1
+      },
+      "append_unique": {
+        "inquiry_types": "fact"
+      }
+    },
+    "ask_context": {
+      "increment": {
+        "inquiry_count": 1
+      },
+      "append_unique": {
+        "inquiry_types": "context"
+      }
+    },
+    "ask_counterfactual": {
+      "increment": {
+        "inquiry_count": 1
+      },
+      "append_unique": {
+        "inquiry_types": "counterfactual"
+      }
+    },
+    "find_family_letter": {
+      "append_unique": {
+        "clues_found": "family_letter"
+      },
+      "set": {
+        "evidence_completeness": 1
+      }
+    },
+    "find_military_order": {
+      "append_unique": {
+        "clues_found": "military_order"
+      },
+      "set": {
+        "evidence_completeness": 2
+      }
+    },
+    "find_route_map": {
+      "append_unique": {
+        "clues_found": "route_map"
+      },
+      "set": {
+        "evidence_completeness": 3
+      }
+    },
+    "hear_civilian_testimony": {
+      "append_unique": {
+        "clues_found": "civilian_testimony"
+      },
+      "set": {
+        "evidence_completeness": 4,
+        "testimony_saved": true
+      },
+      "increment": {
+        "trust_public": 1
+      }
+    },
+    "gain_military_trust": {
+      "increment": {
+        "trust_military": 1
+      }
+    },
+    "choose_intervene": {
+      "set": {
+        "intervention_attempted": true
+      },
+      "increment": {
+        "action_tendency": 1,
+        "knowledge_debt": 1
+      }
+    },
+    "choose_witness": {
+      "increment": {
+        "action_tendency": -1
+      }
+    },
+    "deliver_warning": {
+      "set": {
+        "warning_delivered": true,
+        "recall_delayed": true
+      },
+      "increment": {
+        "trust_military": 1
+      }
+    },
+    "fail_delivery": {
+      "set": {
+        "warning_delivered": false,
+        "recall_delayed": false
+      }
+    },
+    "save_testimony": {
+      "set": {
+        "testimony_saved": true
+      },
+      "increment": {
+        "trust_public": 1
+      }
+    },
+    "set_ending_divergent": {
+      "set": {
+        "timeline": "divergent",
+        "ending_id": "ending_divergent"
+      }
+    },
+    "set_ending_canonical": {
+      "set": {
+        "timeline": "canonical",
+        "ending_id": "ending_canonical"
+      }
+    },
+    "set_ending_truth": {
+      "set": {
+        "timeline": "truth",
+        "ending_id": "ending_truth"
+      }
+    },
+    "choose_leave": {
+      "set": {
+        "continuation_choice": "leave"
+      }
+    },
+    "choose_continue": {
+      "set": {
+        "continuation_choice": "continue"
+      }
+    }
+  },
+  "nodes": [
+    {
+      "scene_id": "s01_modern_article",
+      "year": 2026,
+      "entry_conditions": [],
+      "on_enter_effects": [],
+      "next_scene_ids": [
+        "s02_baby_home"
+      ]
+    },
+    {
+      "scene_id": "s02_baby_home",
+      "year": 1122,
+      "entry_conditions": [],
+      "on_enter_effects": [
+        "set_baby_state"
+      ],
+      "next_scene_ids": [
+        "s03_baby_liushanshan"
+      ]
+    },
+    {
+      "scene_id": "s03_baby_liushanshan",
+      "year": 1122,
+      "entry_conditions": [],
+      "on_enter_effects": [
+        "reveal_fate"
+      ],
+      "next_scene_ids": [
+        "s04_growth_1127"
+      ]
+    },
+    {
+      "scene_id": "s04_growth_1127",
+      "year": 1127,
+      "entry_conditions": [],
+      "on_enter_effects": [
+        "advance_to_1127"
+      ],
+      "next_scene_ids": [
+        "s05_station"
+      ]
+    },
+    {
+      "scene_id": "s05_station",
+      "year": 1127,
+      "entry_conditions": [],
+      "on_enter_effects": [],
+      "next_scene_ids": [
+        "s06_ferry"
+      ]
+    },
+    {
+      "scene_id": "s06_ferry",
+      "year": 1132,
+      "entry_conditions": [],
+      "on_enter_effects": [],
+      "next_scene_ids": [
+        "s07_military_town"
+      ]
+    },
+    {
+      "scene_id": "s07_military_town",
+      "year": 1138,
+      "entry_conditions": [],
+      "on_enter_effects": [],
+      "next_scene_ids": [
+        "s08_yuefei_countdown"
+      ]
+    },
+    {
+      "scene_id": "s08_yuefei_countdown",
+      "year": 1140,
+      "entry_conditions": [
+        "three_inquiry_types"
+      ],
+      "on_enter_effects": [],
+      "next_scene_ids": [
+        "s09_recall_chain"
+      ]
+    },
+    {
+      "scene_id": "s09_recall_chain",
+      "year": 1141,
+      "entry_conditions": [
+        "all_four_clues",
+        "information_chain_complete"
+      ],
+      "on_enter_effects": [
+        "advance_to_1141"
+      ],
+      "next_scene_ids": [
+        "s10_intervention"
+      ]
+    },
+    {
+      "scene_id": "s10_intervention",
+      "year": 1141,
+      "entry_conditions": [],
+      "on_enter_effects": [],
+      "next_scene_ids": [
+        "s11_outcome_router"
+      ]
+    },
+    {
+      "scene_id": "s12_leave_or_continue",
+      "year": 1142,
+      "entry_conditions": [],
+      "on_enter_effects": [],
+      "next_scene_ids": [
+        "s13_exit_chapter",
+        "s14_xinqiji_intro"
+      ]
+    },
+    {
+      "scene_id": "s13_exit_chapter",
+      "year": 1142,
+      "entry_conditions": [
+        "leave_selected"
+      ],
+      "on_enter_effects": [],
+      "next_scene_ids": []
+    },
+    {
+      "scene_id": "s14_xinqiji_intro",
+      "year": 1161,
+      "entry_conditions": [
+        "continue_selected"
+      ],
+      "on_enter_effects": [
+        "advance_to_1161"
+      ],
+      "next_scene_ids": []
+    },
+    {
+      "scene_id": "s11_outcome_router",
+      "year": 1142,
+      "entry_conditions": [],
+      "on_enter_effects": [
+        "advance_to_1142"
+      ],
+      "next_scene_ids": [
+        "s12_leave_or_continue"
+      ]
+    }
+  ],
+  "endings": {
+    "ending_divergent": {
+      "label": "偏离但未改写",
+      "timeline": "divergent",
+      "required_condition": "divergent_ready",
+      "next_choice": "leave_or_continue"
+    },
+    "ending_canonical": {
+      "label": "历史轨迹",
+      "timeline": "canonical",
+      "required_condition": "always_after_1142",
+      "next_choice": "leave_or_continue"
+    },
+    "ending_truth": {
+      "label": "见证者真相线",
+      "timeline": "truth",
+      "required_condition": "truth_ready",
+      "next_choice": "leave_or_continue"
+    }
+  }
+}

@@ -1,0 +1,560 @@
+{
+  "schema_version": "1.0",
+  "id": "demo2_ch1_content",
+  "version": "v01",
+  "title": "第一章 南宋意难平｜运行时内容包",
+  "status": "draft-for-integration",
+  "language": "zh-CN",
+  "state_contract": "demo2_ch1_state_v01.json",
+  "ui_defaults": {
+    "dialogue_slot": "bottom_center",
+    "speaker_slot": "left_badge",
+    "choice_slot": "bottom_right",
+    "timeline_slot": "top_right",
+    "clue_slot": "right_drawer",
+    "visual_style": "ink_wash_southern_song"
+  },
+  "scenes": [
+    {
+      "id": "s01_modern_article",
+      "title": "序章｜读到一半",
+      "year": 2026,
+      "visual": "modern_dorm_to_ink_scroll",
+      "beats": [
+        {
+          "id": "s01_b01",
+          "speaker": "旁白",
+          "text": "文章阅读进度停在 72%。屏幕上最后一行问：如果你知道一个人二十年后的结局，你会回去改变它吗？",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s01_b02",
+          "speaker": "系统",
+          "text": "问题已被点击。请带着问题进入 1122 年。",
+          "ui_slot": "dialogue_slot",
+          "choices": [
+            {
+              "id": "s01_c01",
+              "label": "点击“回到那个时候”",
+              "effects": [
+                "set_baby_state"
+              ],
+              "next_scene_id": "s02_baby_home"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s02_baby_home",
+      "title": "第一幕｜两岁的来客",
+      "year": 1122,
+      "visual": "low_angle_beam_and_cloth",
+      "beats": [
+        {
+          "id": "s02_b01",
+          "speaker": "旁白",
+          "text": "屋梁压得很低。你只能看见衣料、手指、铜钱和一束从门缝落下的光。你现在只有两岁。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s02_b02",
+          "speaker": "抚养者",
+          "text": "粮价又涨了。北边的路，怕是越来越不太平。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s02_b03",
+          "speaker": "旁白",
+          "text": "你听不懂天下，只记住了声音。远处的马蹄，像墨点落在水面。",
+          "ui_slot": "dialogue_slot",
+          "choices": [
+            {
+              "id": "s02_c01",
+              "label": "伸手触摸旧铜钱",
+              "effects": [],
+              "next_scene_id": "s03_baby_liushanshan"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s03_baby_liushanshan",
+      "title": "第一幕｜问题出现",
+      "year": 1122,
+      "visual": "paper_sky_fox",
+      "beats": [
+        {
+          "id": "s03_b01",
+          "speaker": "刘看山",
+          "text": "这里是 1122 年，北宋末年。你还不能改变大事，但可以先记住一个答案。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s03_b02",
+          "speaker": "玩家",
+          "text": "岳飞还有多久会死？",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s03_b03",
+          "speaker": "刘看山",
+          "text": "事实：史料记载岳飞在 1142 年离世。从 1122 年算起，大约二十年。背景：知道终点不代表知道谁会把人推向终点。反问：你准备先查哪一封信？",
+          "ui_slot": "dialogue_slot",
+          "effects": [
+            "reveal_fate"
+          ],
+          "choices": [
+            {
+              "id": "s03_c01",
+              "label": "记住这个答案",
+              "effects": [
+                "reveal_fate"
+              ],
+              "next_scene_id": "s04_growth_1127"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s04_growth_1127",
+      "title": "第二幕｜靖康之后",
+      "year": 1127,
+      "visual": "long_scroll_migration",
+      "beats": [
+        {
+          "id": "s04_b01",
+          "speaker": "旁白",
+          "text": "时间向前翻页。1127 年，靖康之变后，北宋灭亡，南宋建立。你从会走路的孩子长成能读懂几行字的少年。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s04_b02",
+          "speaker": "旁白",
+          "text": "南宋不是一张地图，而是驿路、渡口、军镇和迁徙者共同撑起的一段日子。",
+          "ui_slot": "dialogue_slot",
+          "choices": [
+            {
+              "id": "s04_c01",
+              "label": "前往驿站",
+              "effects": [
+                "advance_to_1127"
+              ],
+              "next_scene_id": "s05_station"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s05_station",
+      "title": "第二幕｜驿站的家书",
+      "year": 1127,
+      "visual": "station_lamp_and_letter",
+      "beats": [
+        {
+          "id": "s05_b01",
+          "speaker": "老驿卒",
+          "text": "这封家书没有官印，却一路被人捎到这里。想知道消息怎么走，先看它经过谁的手。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s05_b02",
+          "speaker": "旁白",
+          "text": "线索卡：家书。它证明普通人的消息会沿着驿路移动，也会在每一次托付中改变。",
+          "ui_slot": "clue_slot",
+          "effects": [
+            "find_family_letter"
+          ]
+        },
+        {
+          "id": "s05_b03",
+          "speaker": "刘看山",
+          "text": "事实：家书不是军令。背景：没有正式身份的消息，靠的是信任。反问：你要查送信路线，还是先问谁愿意替你作证？",
+          "ui_slot": "dialogue_slot",
+          "choices": [
+            {
+              "id": "s05_c01",
+              "label": "询问送信路线",
+              "effects": [
+                "ask_context"
+              ],
+              "next_scene_id": "s06_ferry"
+            },
+            {
+              "id": "s05_c02",
+              "label": "记下老驿卒的证言",
+              "effects": [
+                "ask_fact",
+                "gain_military_trust"
+              ],
+              "next_scene_id": "s06_ferry"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s06_ferry",
+      "title": "第二幕｜渡口的证言",
+      "year": 1132,
+      "visual": "ferry_mist_and_refugees",
+      "beats": [
+        {
+          "id": "s06_b01",
+          "speaker": "迁徙者",
+          "text": "我们不是叛军，也不是谁的数字。只想知道下一道命令会把我们赶到哪里。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s06_b02",
+          "speaker": "旁白",
+          "text": "线索卡：普通人证言。你可以保存这句话，也可以只带走路线。",
+          "ui_slot": "clue_slot",
+          "choices": [
+            {
+              "id": "s06_c01",
+              "label": "保存证言",
+              "effects": [
+                "hear_civilian_testimony",
+                "ask_context"
+              ],
+              "next_scene_id": "s07_military_town"
+            },
+            {
+              "id": "s06_c02",
+              "label": "只记录路线",
+              "effects": [
+                "ask_fact"
+              ],
+              "next_scene_id": "s07_military_town"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s07_military_town",
+      "title": "第三幕｜军镇里的军书",
+      "year": 1138,
+      "visual": "ink_town_banner_and_horse",
+      "beats": [
+        {
+          "id": "s07_b01",
+          "speaker": "军中同伴",
+          "text": "军书写得很快，命令也来得很快。真正难的是：谁收到，谁相信，谁有能力照做。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s07_b02",
+          "speaker": "旁白",
+          "text": "线索卡：军书。你确认命令来源，却还不知道它能否穿过层层转达。",
+          "ui_slot": "clue_slot",
+          "effects": [
+            "find_military_order",
+            "gain_military_trust"
+          ]
+        },
+        {
+          "id": "s07_b03",
+          "speaker": "刘看山",
+          "text": "事实：岳飞在抗金战事中逐渐成为关键将领。背景：军书的效力取决于组织与人。反问：你要继续查路线图，还是问一条命令为什么会被执行？",
+          "ui_slot": "dialogue_slot",
+          "choices": [
+            {
+              "id": "s07_c01",
+              "label": "查路线图",
+              "effects": [
+                "ask_context"
+              ],
+              "next_scene_id": "s08_yuefei_countdown"
+            },
+            {
+              "id": "s07_c02",
+              "label": "追问执行能力",
+              "effects": [
+                "ask_counterfactual",
+                "gain_military_trust"
+              ],
+              "next_scene_id": "s08_yuefei_countdown"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s08_yuefei_countdown",
+      "title": "第三幕｜岳飞还有二十年",
+      "year": 1140,
+      "visual": "timeline_1122_1142",
+      "beats": [
+        {
+          "id": "s08_b01",
+          "speaker": "旁白",
+          "text": "时间轴亮起：1122 → 1142。二十年已经走过大半。你第一次见到岳飞，只看见他在军书后停了一下笔。",
+          "ui_slot": "timeline_slot"
+        },
+        {
+          "id": "s08_b02",
+          "speaker": "岳飞",
+          "text": "若要传话，先把话说清，再想清楚谁能承担它。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s08_b03",
+          "speaker": "刘看山",
+          "text": "你已经可以提问三类问题：事实、背景、反事实。答案会越来越深，也会让你的知识债增加。",
+          "ui_slot": "dialogue_slot",
+          "choices": [
+            {
+              "id": "s08_c01",
+              "label": "问“召回是什么事实？”",
+              "condition": null,
+              "effects": [
+                "ask_fact"
+              ],
+              "next_scene_id": "s09_recall_chain"
+            },
+            {
+              "id": "s08_c02",
+              "label": "问“为什么有人愿意执行？”",
+              "effects": [
+                "ask_context"
+              ],
+              "next_scene_id": "s09_recall_chain"
+            },
+            {
+              "id": "s08_c03",
+              "label": "问“如果预警提前抵达呢？”",
+              "effects": [
+                "ask_counterfactual"
+              ],
+              "next_scene_id": "s09_recall_chain"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s09_recall_chain",
+      "title": "第四幕｜1141 年的诏书",
+      "year": 1141,
+      "visual": "vermilion_edict_chain",
+      "beats": [
+        {
+          "id": "s09_b01",
+          "speaker": "旁白",
+          "text": "你找到一份关于召回的诏书。它不是单一谜题，而是一条信息链：来源 → 路线 → 接收者 → 执行能力。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s09_b02",
+          "speaker": "刘看山",
+          "text": "事实：1141 年，岳飞被召回。背景：阻止一纸诏书，必须让预警可靠抵达，也必须有人愿意承担行动后果。反问：你要把时间交给军中接收者，还是先救正在迁徙的人？",
+          "ui_slot": "dialogue_slot",
+          "choices": [
+            {
+              "id": "s09_c01",
+              "label": "把预警交给军中接收者",
+              "condition": "information_chain_complete",
+              "effects": [
+                "choose_intervene",
+                "deliver_warning"
+              ],
+              "next_scene_id": "s10_intervention"
+            },
+            {
+              "id": "s09_c02",
+              "label": "先帮助迁徙者并保存证言",
+              "effects": [
+                "choose_witness",
+                "save_testimony"
+              ],
+              "next_scene_id": "s10_intervention"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s10_intervention",
+      "title": "第四幕｜选择产生压力",
+      "year": 1141,
+      "visual": "split_scroll_military_civilians",
+      "beats": [
+        {
+          "id": "s10_b01",
+          "speaker": "旁白",
+          "text": "你改变了一个节点，却没有改变整个时代。军队部署、百姓迁徙、消息可信度同时向前滚动。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s10_b02",
+          "speaker": "刘看山",
+          "text": "不要急着把结果叫作成功。先看谁承担了代价。",
+          "ui_slot": "dialogue_slot",
+          "choices": [
+            {
+              "id": "s10_c01",
+              "label": "等待 1142 年的回声",
+              "effects": [],
+              "next_scene_id": "s11_outcome_router"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s11_outcome_router",
+      "title": "第五幕｜1142 年之后",
+      "year": 1142,
+      "visual": "empty_camp_sealed_letter",
+      "beats": [
+        {
+          "id": "s11_b01",
+          "speaker": "旁白",
+          "text": "1142 年。空营、封存的信、没有寄出的家书，把答案留在风里。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s11_b02",
+          "speaker": "刘看山",
+          "text": "你没有独自承担整个时代，但你留下了行动的痕迹。",
+          "ui_slot": "dialogue_slot",
+          "choices": [
+            {
+              "id": "s11_c01",
+              "label": "查看历史轨迹",
+              "condition": "always_after_1142",
+              "effects": [
+                "advance_to_1142",
+                "set_ending_canonical"
+              ],
+              "next_scene_id": "s12_leave_or_continue"
+            },
+            {
+              "id": "s11_c02",
+              "label": "查看偏离但未改写",
+              "condition": "divergent_ready",
+              "effects": [
+                "advance_to_1142",
+                "set_ending_divergent"
+              ],
+              "next_scene_id": "s12_leave_or_continue"
+            },
+            {
+              "id": "s11_c03",
+              "label": "查看见证者真相线",
+              "condition": "truth_ready",
+              "effects": [
+                "advance_to_1142",
+                "set_ending_truth"
+              ],
+              "next_scene_id": "s12_leave_or_continue"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s12_leave_or_continue",
+      "title": "结尾选择｜离开，或继续",
+      "year": 1142,
+      "visual": "timeline_two_buttons",
+      "beats": [
+        {
+          "id": "s12_b01",
+          "speaker": "刘看山",
+          "text": "你可以接受这段历史的结局，也可以把问题带去更晚的年代。",
+          "ui_slot": "dialogue_slot",
+          "choices": [
+            {
+              "id": "s12_c01",
+              "label": "直接进入下一章",
+              "effects": [
+                "choose_leave"
+              ],
+              "next_scene_id": "s13_exit_chapter"
+            },
+            {
+              "id": "s12_c02",
+              "label": "继续游戏，见证并帮助辛弃疾",
+              "effects": [
+                "choose_continue"
+              ],
+              "next_scene_id": "s14_xinqiji_intro"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s13_exit_chapter",
+      "title": "第一章结束｜带着问题离开",
+      "year": 1142,
+      "visual": "scroll_closes",
+      "beats": [
+        {
+          "id": "s13_b01",
+          "speaker": "旁白",
+          "text": "你带着“已知但未能改变”的问题离开这一章。时间轴没有替你回答，只把下一章留在远处。",
+          "ui_slot": "dialogue_slot"
+        }
+      ]
+    },
+    {
+      "id": "s14_xinqiji_intro",
+      "title": "支线入口｜1161 辛弃疾",
+      "year": 1161,
+      "visual": "sharp_ink_warm_earth_red",
+      "beats": [
+        {
+          "id": "s14_b01",
+          "speaker": "旁白",
+          "text": "时间轴推进到 1161 年。墨线变得更锋利，土红从纸背渗出。一个更年轻的行动者正在集合人手。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s14_b02",
+          "speaker": "辛弃疾",
+          "text": "我知道这一步未必能赢。但若连第一步都不走，后来的人连失败的方向都找不到。",
+          "ui_slot": "dialogue_slot"
+        },
+        {
+          "id": "s14_b03",
+          "speaker": "玩家",
+          "text": "我能帮你什么？",
+          "ui_slot": "dialogue_slot",
+          "choices": [
+            {
+              "id": "s14_c01",
+              "label": "帮他把名单送到安全地点",
+              "effects": [
+                "advance_to_1161"
+              ],
+              "next_scene_id": null
+            }
+          ]
+        },
+        {
+          "id": "s14_b04",
+          "speaker": "刘看山",
+          "text": "新问题：如果一个人知道自己可能失败，他还要不要先走出第一步？第一章 Demo2 到此结束。",
+          "ui_slot": "dialogue_slot"
+        }
+      ]
+    }
+  ],
+  "lineage": {
+    "timeline_one": "divergent",
+    "timeline_two": "canonical",
+    "truth_line": "truth",
+    "continuation_options": [
+      "leave",
+      "continue"
+    ],
+    "xinqiji_entry_scene": "s14_xinqiji_intro"
+  }
+}

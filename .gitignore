@@ -1,0 +1,14 @@
+.DS_Store
+node_modules/
+.env
+.env.*
+!.env.example
+dist/
+build/
+.godot/
+*.tmp
+*.bak
+qa-*/
+*.docx
+*.pdf
+*.zip

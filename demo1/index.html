@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>这真的是对的时间线吗？｜第一章 靖康前夜</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main id="app" class="app">
+    <div class="grain"></div>
+    <header class="topbar">
+      <div class="brand"><span class="seal">知</span><span>这真的是对的时间线吗？</span></div>
+      <div class="chapter">第一章 · 靖康前夜 <span id="progress">01 / 05</span></div>
+    </header>
+
+    <section id="stage" class="stage"></section>
+
+    <aside id="shan-panel" class="shan-panel hidden">
+      <div class="shan-head"><span class="shan-mark">看</span><div><strong>刘看山</strong><small>问题连接已建立</small></div><button id="close-shan" aria-label="关闭">×</button></div>
+      <div id="shan-log" class="shan-log"></div>
+      <div class="ask-row"><input id="ask-input" placeholder="问一个关于眼前线索的问题…" /><button id="ask-btn">提问</button></div>
+      <div class="quick-asks"><button data-ask="这里是哪一年？">这里是哪一年？</button><button data-ask="征发文书能证明军队去向吗？">文书能证明去向吗？</button><button data-ask="我现在告诉岳飞有用吗？">现在告诉岳飞有用吗？</button></div>
+    </aside>
+
+    <div id="toast" class="toast"></div>
+  </main>
+  <script src="./game.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#26383d"/><stop offset="1" stop-color="#0f171b"/></linearGradient></defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect x="58" y="46" width="1164" height="628" rx="8" fill="#e9e0ca"/>
+  <rect x="58" y="46" width="1164" height="62" rx="8" fill="#18262b"/>
+  <circle cx="90" cy="77" r="13" fill="#b15c47"/><text x="118" y="84" fill="#efe6d3" font-size="20" font-family="sans-serif">这真的是对的时间线吗？</text>
+  <text x="1040" y="82" fill="#c4b995" font-size="14" font-family="sans-serif">第一章 · 靖康前夜</text>
+  <text x="118" y="190" fill="#a13a32" font-size="16" font-family="sans-serif" letter-spacing="5">序章 · 读到一半</text>
+  <text x="118" y="270" fill="#18262b" font-size="46" font-family="serif">如果你知道一个人</text>
+  <text x="118" y="330" fill="#18262b" font-size="46" font-family="serif">二十年后的结局？</text>
+  <text x="118" y="390" fill="#4d5754" font-size="20" font-family="serif">你会回去改变它吗</text>
+  <rect x="118" y="485" width="190" height="54" fill="#18262b"/><text x="150" y="520" fill="#efe6d3" font-size="17" font-family="sans-serif">带着问题出发 →</text>
+  <path d="M770 160 C850 110 1080 140 1150 230 S1080 390 940 350 S780 410 740 520" fill="none" stroke="#9d3b32" stroke-width="4" opacity=".55"/>
+  <circle cx="920" cy="260" r="86" fill="#61736e" opacity=".35"/><circle cx="920" cy="260" r="48" fill="#1d3033" opacity=".65"/>
+</svg>
