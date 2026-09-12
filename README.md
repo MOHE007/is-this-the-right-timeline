@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/badge/license-MIT-1f2937?style=for-the-badge)](LICENSE)
 [![Zhihu Hackathon](https://img.shields.io/badge/zhihu--hackathon-2026-b33a32?style=for-the-badge)](https://www.zhihu.com/)
 [![Status](https://img.shields.io/badge/status-active-2f855a?style=for-the-badge)](https://github.com/)
-[![Stars](https://img.shields.io/github/stars/OWNER/is-this-the-right-timeline?style=for-the-badge&logo=github)](https://github.com/OWNER/is-this-the-right-timeline)
+[![Stars](https://img.shields.io/github/stars/MOHE007/is-this-the-right-timeline?style=for-the-badge&logo=github)](https://github.com/MOHE007/is-this-the-right-timeline)
 
 </div>
 
@@ -25,7 +25,7 @@
 
 **15 分钟 · 文字线索 · 多结局**
 
-👉 [在线体验 Demo1（GitHub Pages）](https://OWNER.github.io/is-this-the-right-timeline/demo1/)
+👉 [在线体验 Demo1（GitHub Pages）](https://MOHE007.github.io/is-this-the-right-timeline/demo1/)
 
 ## ✨ Features
 
@@ -59,7 +59,7 @@
 三步即可运行第一章：
 
 ```bash
-git clone https://github.com/OWNER/is-this-the-right-timeline.git
+git clone https://github.com/MOHE007/is-this-the-right-timeline.git
 cd is-this-the-right-timeline/demo1
 python3 -m http.server 4173
 ```
