@@ -25,7 +25,7 @@
 
 **15 分钟 · 文字线索 · 多结局**
 
-👉 [在线体验 Demo1（GitHub Pages）](https://MOHE007.github.io/is-this-the-right-timeline/demo1/)
+👉 [在线体验 Demo1（GitHub Pages）](https://mohe007.github.io/is-this-the-right-timeline/)
 
 ## ✨ Features
 
