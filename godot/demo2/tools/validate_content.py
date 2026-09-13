@@ -23,23 +23,52 @@ def main() -> int:
     content = load("demo2_ch1_content_v01.json")
     state = load("demo2_ch1_state_v01.json")
     manifest = load("demo2_ch1_manifest_v01.json")
+    state_patch = load("demo2_ch1_state_v02.json")
+    content_patch = load("demo2_ch1_content_v02_patch.json")
+    shan = load("demo2_ch1_shan_answers_v02.json")
 
-    scene_ids = {scene["id"] for scene in content.get("scenes", [])}
+    # Merge v02 the same way the runtime does (field-level scene merge).
+    scenes_by_id = {scene["id"]: scene for scene in content.get("scenes", [])}
+    for patch_scene in content_patch.get("scenes", []):
+        base = scenes_by_id.get(patch_scene.get("id"))
+        if base is None:
+            print(f"ERROR: content v02 patch targets unknown scene {patch_scene.get('id')}")
+            return 1
+        base.update(patch_scene)
+
+    scene_ids = set(scenes_by_id)
     errors: list[str] = []
     if len(scene_ids) != 14:
         errors.append(f"expected 14 unique scenes, got {len(scene_ids)}")
 
-    conditions = set(state.get("conditions", {}))
-    effects = set(state.get("effects_catalog", {}))
+    conditions = set(state.get("conditions", {})) | set(state_patch.get("conditions_patch", {}))
+    effects = set(state.get("effects_catalog", {})) | set(state_patch.get("effects_catalog_patch", {}))
     referenced_scenes: set[str] = set()
     referenced_effects: set[str] = set()
     referenced_conditions: set[str] = set()
 
-    for scene in content.get("scenes", []):
+    shan_prompts = set(shan.get("prompts", {}))
+    investigation_objects = 0
+    for scene in scenes_by_id.values():
         if not scene.get("visual"):
             errors.append(f"{scene.get('id')}: missing visual art slot")
+        investigation = scene.get("investigation") or {}
+        seen_object_ids: set[str] = set()
+        for obj in investigation.get("objects", []):
+            object_id = obj.get("id", "")
+            if not object_id or not object_id.isascii():
+                errors.append(f"{scene.get('id')}: bad investigation object id {object_id!r}")
+            if object_id in seen_object_ids:
+                errors.append(f"{scene.get('id')}: duplicate investigation object {object_id}")
+            seen_object_ids.add(object_id)
+            referenced_effects.update(e.split(":", 1)[0] for e in obj.get("effects", []))
+            investigation_objects += 1
+        referenced_effects.update(e.split(":", 1)[0] for e in investigation.get("leave_effects", []))
+        for prompt_id in scene.get("shan_prompts", []):
+            if prompt_id not in shan_prompts:
+                errors.append(f"{scene.get('id')}: unknown shan prompt {prompt_id}")
         for beat in scene.get("beats", []):
-            referenced_effects.update(beat.get("effects", []))
+            referenced_effects.update(e.split(":", 1)[0] for e in beat.get("effects", []))
             for choice in beat.get("choices", []):
                 target = choice.get("next_scene_id")
                 if target:
@@ -50,7 +79,21 @@ def main() -> int:
                 for item in composite.get("all", []) if isinstance(composite, dict) else []:
                     if isinstance(item, str):
                         referenced_conditions.add(item)
-                referenced_effects.update(choice.get("effects", []))
+                referenced_effects.update(e.split(":", 1)[0] for e in choice.get("effects", []))
+
+    for prompt_id, prompt in shan.get("prompts", {}).items():
+        referenced_effects.update(e.split(":", 1)[0] for e in prompt.get("effects", []))
+        for key in ("fact", "context", "counter_question"):
+            if not prompt.get("answer", {}).get(key):
+                errors.append(f"shan prompt {prompt_id}: missing answer.{key}")
+        if not prompt.get("insufficient_text"):
+            errors.append(f"shan prompt {prompt_id}: missing insufficient_text")
+
+    # Named conditions referenced inside v02 condition groups must resolve.
+    for name, group in state_patch.get("conditions_patch", {}).items():
+        for item in group.get("all", []) if isinstance(group, dict) else []:
+            if isinstance(item, str) and item not in conditions:
+                errors.append(f"condition {name}: unknown sub-condition {item}")
 
     missing_scenes = referenced_scenes - scene_ids
     missing_conditions = referenced_conditions - conditions
@@ -72,6 +115,7 @@ def main() -> int:
         return 1
 
     print(f"OK: {len(scene_ids)} scenes, {len(referenced_effects)} effects, {len(referenced_conditions)} conditions")
+    print(f"OK: v02 merge — {investigation_objects} investigation objects, {len(shan_prompts)} shan prompts")
     print("OK: art slot metadata present for every scene")
     return 0
 

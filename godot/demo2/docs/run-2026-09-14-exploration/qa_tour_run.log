@@ -1,0 +1,52 @@
+Godot Engine v4.3.stable.official.77dcf97d8 - https://godotengine.org
+OpenGL API 4.1 Metal - 90.5 - Compatibility - Using Device: Apple - Apple M2
+
+Movie Maker mode enabled, recording movie at 10 FPS...
+TOUR action=1 scene=s01_modern_article beat=1
+TOUR action=2 scene=s02_baby_home beat=0
+TOUR action=3 scene=s02_baby_home beat=1
+TOUR action=4 scene=s02_baby_home beat=2
+TOUR action=5 scene=s03_baby_liushanshan beat=0
+TOUR action=6 scene=s03_baby_liushanshan beat=1
+TOUR action=7 scene=s03_baby_liushanshan beat=2
+TOUR action=8 scene=s04_growth_1127 beat=0
+TOUR action=9 scene=s04_growth_1127 beat=1
+TOUR action=10 scene=s05_station beat=0
+TOUR investigate station_letter scene=s05_station
+TOUR investigate old_station_plate scene=s05_station
+TOUR investigate old_postman scene=s05_station
+TOUR shan route_explain scene=s05_station
+TOUR action=15 scene=s05_station beat=1
+TOUR action=16 scene=s05_station beat=2
+TOUR action=17 scene=s06_ferry beat=0
+TOUR investigate migrant_witness scene=s06_ferry
+TOUR investigate ferry_register scene=s06_ferry
+TOUR shan testimony_meaning scene=s06_ferry
+TOUR action=21 scene=s06_ferry beat=1
+TOUR action=22 scene=s07_military_town beat=0
+TOUR investigate military_order scene=s07_military_town
+TOUR investigate recall_recipient_token scene=s07_military_town
+TOUR investigate military_companion scene=s07_military_town
+TOUR action=26 scene=s07_military_town beat=1
+TOUR action=27 scene=s07_military_town beat=2
+TOUR action=28 scene=s08_yuefei_countdown beat=0
+TOUR action=29 scene=s08_yuefei_countdown beat=1
+TOUR action=30 scene=s08_yuefei_countdown beat=2
+TOUR action=31 scene=s09_recall_chain beat=0
+TOUR action=32 scene=s09_recall_chain beat=1
+TOUR action=33 scene=s10_intervention beat=0
+TOUR action=34 scene=s10_intervention beat=1
+TOUR action=35 scene=s11_outcome_router beat=0
+TOUR action=36 scene=s11_outcome_router beat=1
+TOUR action=37 scene=s12_leave_or_continue beat=0
+TOUR action=38 scene=s14_xinqiji_intro beat=0
+TOUR action=39 scene=s14_xinqiji_intro beat=1
+TOUR action=40 scene=s14_xinqiji_intro beat=2
+TOUR action=41 scene=s14_xinqiji_intro beat=3
+TOUR action=42 scene=s14_xinqiji_intro beat=4
+----------------
+Done recording movie at path: /tmp/demo2_tour_v02/frame.png
+258 frames at 10 FPS (movie length: 00:00:25), recorded in 00:00:18 (138% of real-time speed).
+CPU time: 0.18 seconds (average: 0.69 ms/frame)
+GPU time: 0.00 seconds (average: 0.00 ms/frame)
+----------------
