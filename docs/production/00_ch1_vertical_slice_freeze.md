@@ -69,6 +69,9 @@ updated: 2026-09-13
 - `demo2_ch1_state_v01.json`：状态变量、条件和效果。
 - `demo2_ch1_content_v01.json`：运行时对白与选项。
 - `demo2_ch1_implementation_v01.md`：给 DSH Desktop 的接入规格。
+- `demo2_ch1_narrative_enhancement_v01.md`：盐选叙事机制的原创转译与节奏卡。
+- `demo2_ch1_investigation_matrix_v01.md`：调查动作、线索、状态效果和 UI 反馈矩阵。
+- `demo2_ch1_timeline_branch_cards_v01.md`：三结局条件、代价和 1161 入口。
 
 ## 责任接力
 

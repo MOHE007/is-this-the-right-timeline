@@ -76,7 +76,8 @@ is-this-the-right-timeline/
 ├── .github/workflows/deploy-pages.yml
 ├── demo1/                         # 第一章可运行浏览器 Demo
 ├── docs/                          # 策划、玩法与制作包 Markdown
-│   └── production/                # 剧本 / 冻结表 / 实现规格 / 六问答复
+│   ├── production/                # 剧本 / 冻结表 / 实现规格 / 调查与时间线卡
+│   └── agent-handoff/             # 给协作者的拉取、验收与 PR 提示词
 ├── data/ch1/                      # 运行时状态、内容与资源清单 JSON
 ├── assets/                        # 原创水墨素材与 Demo 预览图
 └── godot/.gitkeep                 # Godot 4.x 工程预留
