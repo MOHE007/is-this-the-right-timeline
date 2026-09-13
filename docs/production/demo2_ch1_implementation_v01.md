@@ -133,13 +133,13 @@ res://data/ch1/demo2_ch1_manifest_v01.json
       "choice_id": "choice_warn_yuefei",
       "label": "把预警交给传令者",
       "conditions": {"all": ["evidence.source", "evidence.route", "evidence.recipient", "evidence.executor"]},
-      "effects": ["set:branch=intervene", "set:message_delivered=true"],
+      "effects": ["set:branch=unrecalled", "set:message_delivered=true"],
       "next": "s11_outcome_router"
     },
     {
       "choice_id": "choice_keep_witness",
       "label": "保存证言，承认自己没有做到",
-      "effects": ["set:branch=witness"],
+      "effects": ["set:branch=history_continues"],
       "next": "s11_outcome_router"
     }
   ]
@@ -169,7 +169,7 @@ res://data/ch1/demo2_ch1_manifest_v01.json
   },
   "flags": [
     "article_read", "shan_year_answered", "letter_checked", "order_checked", "map_checked",
-    "commoner_trust_gained", "message_delivered", "branch_intervene", "branch_witness", "next_chapter_selected",
+    "commoner_trust_gained", "message_delivered", "history_continues", "next_chapter_selected",
     "xinqiji_helped"
   ]
 }
@@ -252,7 +252,7 @@ choice_presented(node_id, choice_ids)
 choice_selected(choice_id)
 branch_resolved(branch_id)
 
-路由优先级：当 `truth_ready` 与 `divergent_ready` 同时满足时，先按玩家在 `s10_intervention` 写入的 `branch` 判定：`witness` 优先进入 `ending_truth`，`intervene` 优先进入 `ending_divergent`；没有明确分支时回退 `ending_canonical`。不要依赖 JSON 数组顺序决定结局。
+路由优先级：当 `truth_ready` 与 `divergent_ready` 同时满足时，先按 `s10_intervention` 写入的 `branch` 判定：`witness` 进入 `ending_truth`，`intervene` 进入 `ending_divergent`；没有明确分支时回退 `ending_canonical`。不要依赖 JSON 数组顺序决定结局。
 save_requested(slot_id)
 chapter_completed(result_id)
 ```

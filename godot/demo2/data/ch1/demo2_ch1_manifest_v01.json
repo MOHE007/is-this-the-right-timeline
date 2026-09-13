@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "id": "demo2_ch1_manifest",
+  "version": "v01",
+  "title": "第一章南宋意难平｜资源清单",
+  "runtime": "godot-4-web",
+  "state": "demo2_ch1_state_v01.json",
+  "content": "demo2_ch1_content_v01.json",
+  "scene_ids": [
+    "s01_modern_article", "s02_baby_home", "s03_baby_liushanshan", "s04_growth_1127",
+    "s05_station", "s06_ferry", "s07_military_town", "s08_yuefei_countdown",
+    "s09_recall_chain", "s10_intervention", "s11_outcome_router", "s12_leave_or_continue",
+    "s13_exit_chapter", "s14_xinqiji_intro"
+  ],
+  "endings": ["ending_divergent", "ending_canonical", "ending_truth"],
+  "assets": {
+    "visual_style": "ink_wash_southern_song",
+    "required": ["assets/promo-ink-timeline.png", "assets/demo1-preview.svg"]
+  }
+}

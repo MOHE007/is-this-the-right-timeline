@@ -93,12 +93,16 @@ is-this-the-right-timeline/
 - **结局路由**：`ending_divergent`、`ending_canonical`、`ending_truth` 三种结局，经 `s11_outcome_router` 汇总后进入 `s12_leave_or_continue`。
 - **AI 适配**：统一调用 `ask(question, context)`，离线问答库作为稳定兜底。
 
+## 🧪 Demo2 Godot 占位运行时
+
+`godot/demo2/` 已建立最小 Godot 4.x 工程，加载 `data/ch1/` 的内容与状态 JSON，先用占位画面验证 14 个场景和选择推进。梁博森的最终美术通过 `resource_id` 接入 `godot/demo2/assets/art/`，不需要改剧情数据。当前待 DSH Desktop 使用 Godot 4.x 实际运行并回填构建日志。
+
 ## 🗺 Roadmap
 
 | 里程碑 | 状态 | 交付物 |
 | --- | --- | --- |
 | **M0 · 方向冻结** | ✅ 已达成 | 引擎路线、视觉方向、三章玩法框架 |
-| **M1 · 第一章垂直切片** | 🔄 制作包 v0.1 进行中 | 剧本、状态/内容 JSON、实现规格；待分镜、角色卡、线索卡与 Godot 接入 |
+| **M1 · 第一章垂直切片** | 🔄 Godot 占位工程已建立 | 剧本、分镜、角色卡、线索卡、状态/内容 JSON、实现规格；待美术接入与 Godot 实跑 QA |
 | M2 · 第二章原型 | ⏳ 计划中 | 戚家军横版动作核心循环 |
 | M3 · 第三章原型 | ⏳ 计划中 | 淞沪 3D 探索核心循环 |
 | M4 · 三章串联 | ⏳ 计划中 | 选择与记忆跨章节传递 |
