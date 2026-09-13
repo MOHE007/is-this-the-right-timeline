@@ -6,7 +6,11 @@
   "status": "draft-for-integration",
   "extends": "demo2_ch1_state_v01.json",
   "design_rules": {
-    "evidence_layers": ["physical", "eligibility", "shan_verified"],
+    "evidence_layers": [
+      "physical",
+      "eligibility",
+      "shan_verified"
+    ],
     "failure_mode": "continue_with_explicit_consequence",
     "demo1_preserved": true
   },
@@ -19,33 +23,396 @@
     "shan_answer_recall": false,
     "testimony_interpreted": false,
     "missed_critical_clues": [],
-    "shan_questions_left": 3,
-    "investigation_counts": {"s05_station": 0, "s06_ferry": 0, "s07_military_town": 0}
+    "shan_questions_left": 4,
+    "investigation_counts": {
+      "s05_station": 0,
+      "s06_ferry": 0,
+      "s07_military_town": 0
+    }
   },
   "effects_catalog_patch": {
-    "find_route_map_fragment": {"append_unique": {"clue_fragments": "route_map_fragment"}},
-    "find_recall_recipient_token": {"set": {"recall_recipient_token": true}},
-    "find_recall_recipient": {"set": {"recall_recipient_found": true}},
-    "verify_route": {"append_unique": {"verified_clues": "route_map"}, "set": {"route_verified": true}},
-    "verify_recall_chain": {"append_unique": {"verified_clues": "military_order"}, "set": {"shan_answer_recall": true}},
-    "verify_recipient": {"append_unique": {"verified_clues": "recall_recipient_token"}, "set": {"recall_recipient_found": true}},
-    "verify_testimony": {"append_unique": {"verified_clues": "civilian_testimony"}, "set": {"testimony_interpreted": true}},
-    "record_ferry_register": {"append_unique": {"clue_fragments": "ferry_register"}},
-    "consume_shan_question": {"decrement": {"shan_questions_left": 1}},
-    "remember_missed_clue": {"append_unique": {"missed_critical_clues": "$clue_id"}}
+    "find_route_map_fragment": {
+      "append_unique": {
+        "clues_found": "route_map",
+        "clue_fragments": "route_map_fragment"
+      }
+    },
+    "find_recall_recipient_token": {
+      "set": {
+        "recall_recipient_token": true
+      }
+    },
+    "find_recall_recipient": {
+      "set": {
+        "recall_recipient_found": true
+      }
+    },
+    "verify_route": {
+      "append_unique": {
+        "verified_clues": "route_map"
+      },
+      "set": {
+        "route_verified": true
+      }
+    },
+    "verify_recall_chain": {
+      "append_unique": {
+        "verified_clues": "military_order"
+      },
+      "set": {
+        "shan_answer_recall": true
+      }
+    },
+    "verify_recipient": {
+      "append_unique": {
+        "verified_clues": "recall_recipient_token"
+      },
+      "set": {
+        "recall_recipient_found": true
+      }
+    },
+    "verify_testimony": {
+      "append_unique": {
+        "verified_clues": "civilian_testimony"
+      },
+      "set": {
+        "testimony_interpreted": true
+      }
+    },
+    "record_ferry_register": {
+      "append_unique": {
+        "clue_fragments": "ferry_register"
+      }
+    },
+    "consume_shan_question": {
+      "decrement": {
+        "shan_questions_left": 1
+      },
+      "increment": {
+        "inquiry_count": 1
+      }
+    },
+    "remember_missed_clue": {
+      "append_unique": {
+        "missed_critical_clues": "$clue_id"
+      }
+    },
+    "find_family_letter": {
+      "append_unique": {
+        "clues_found": "family_letter",
+        "clue_fragments": "family_letter"
+      }
+    },
+    "find_military_order": {
+      "append_unique": {
+        "clues_found": "military_order",
+        "clue_fragments": "military_order"
+      }
+    },
+    "find_route_map": {
+      "append_unique": {
+        "clues_found": "route_map"
+      }
+    },
+    "hear_civilian_testimony": {
+      "append_unique": {
+        "clues_found": "civilian_testimony",
+        "clue_fragments": "civilian_testimony"
+      }
+    },
+    "remember_missed_clue_if_absent": {
+      "guard": {
+        "not_contains": [
+          "clues_found",
+          "$clue_id"
+        ]
+      },
+      "append_unique": {
+        "missed_critical_clues": "$clue_id"
+      }
+    },
+    "attempt_unverified_intervention": {
+      "increment": {
+        "knowledge_debt": 1
+      }
+    },
+    "use_unreliable_delivery": {
+      "increment": {
+        "knowledge_debt": 1
+      }
+    }
   },
   "conditions_patch": {
-    "route_verified": {"eq": ["route_verified", true]},
-    "recall_recipient_found": {"eq": ["recall_recipient_found", true]},
-    "shan_answer_recall": {"eq": ["shan_answer_recall", true]},
-    "testimony_interpreted": {"eq": ["testimony_interpreted", true]},
-    "shan_questions_available": {"gte": ["shan_questions_left", 1]},
-    "divergent_ready_v02": {"all": ["route_verified", "recall_recipient_found", "shan_answer_recall", {"contains": ["clues_found", "military_order"]}]},
-    "truth_ready_v02": {"all": ["testimony_interpreted", {"gte": ["evidence_completeness", 4]}, {"gte": ["inquiry_count", 3]}, {"lte": ["knowledge_debt", 2]}]}
+    "route_verified": {
+      "eq": [
+        "route_verified",
+        true
+      ]
+    },
+    "recall_recipient_found": {
+      "eq": [
+        "recall_recipient_found",
+        true
+      ]
+    },
+    "shan_answer_recall": {
+      "eq": [
+        "shan_answer_recall",
+        true
+      ]
+    },
+    "testimony_interpreted": {
+      "eq": [
+        "testimony_interpreted",
+        true
+      ]
+    },
+    "shan_questions_available": {
+      "gte": [
+        "shan_questions_left",
+        1
+      ]
+    },
+    "divergent_ready_v02": {
+      "all": [
+        "route_verified",
+        "recall_recipient_found",
+        "shan_answer_recall",
+        {
+          "contains": [
+            "clues_found",
+            "military_order"
+          ]
+        },
+        {
+          "contains": [
+            "clues_found",
+            "route_map"
+          ]
+        },
+        {
+          "gte": [
+            "trust_military",
+            2
+          ]
+        }
+      ]
+    },
+    "truth_ready_v02": {
+      "all": [
+        "testimony_interpreted",
+        {
+          "gte": [
+            "evidence_completeness",
+            4
+          ]
+        },
+        {
+          "gte": [
+            "inquiry_count",
+            3
+          ]
+        },
+        {
+          "lte": [
+            "knowledge_debt",
+            2
+          ]
+        }
+      ]
+    }
   },
   "ending_rules_patch": {
     "ending_divergent": "divergent_ready_v02",
     "ending_canonical": "route_history_continues",
     "ending_truth": "truth_ready_v02"
-  }
+  },
+  "merge_rule": {
+    "strategy": "deep_merge_by_key",
+    "base": "demo2_ch1_state_v01.json",
+    "preserve_unspecified": true,
+    "arrays": "append_unique_by_id",
+    "nodes": "retain_v01_then_patch_by_id",
+    "variables": "retain_v01_then_patch_by_name",
+    "endings": "retain_v01_then_override_named"
+  },
+  "variables_patch": {
+    "clue_fragments": {
+      "type": "array<string>",
+      "default": [],
+      "unique": true
+    },
+    "verified_clues": {
+      "type": "array<string>",
+      "default": [],
+      "unique": true
+    },
+    "route_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "recall_recipient_token": {
+      "type": "boolean",
+      "default": false
+    },
+    "recall_recipient_found": {
+      "type": "boolean",
+      "default": false
+    },
+    "shan_answer_recall": {
+      "type": "boolean",
+      "default": false
+    },
+    "testimony_interpreted": {
+      "type": "boolean",
+      "default": false
+    },
+    "missed_critical_clues": {
+      "type": "array<string>",
+      "default": [],
+      "unique": true
+    },
+    "shan_questions_left": {
+      "type": "integer",
+      "default": 4,
+      "min": 0,
+      "max": 4
+    },
+    "investigation_counts": {
+      "type": "object<string,integer>",
+      "default": {
+        "s05_station": 0,
+        "s06_ferry": 0,
+        "s07_military_town": 0
+      }
+    }
+  },
+  "field_mapping": {
+    "clues_found": {
+      "source": "v01",
+      "canonical": true,
+      "meaning": "已拾取物证唯一真源",
+      "v02_effects": "每个 find_* 同步 append_unique"
+    },
+    "clue_fragments": {
+      "source": "v02",
+      "meaning": "调查碎片；拾取后同步 clues_found"
+    },
+    "verified_clues": {
+      "source": "v02",
+      "meaning": "刘看山验证后的证据"
+    },
+    "evidence_completeness": {
+      "source": "derived",
+      "formula": "unique_count(clues_found ∩ {family_letter,military_order,route_map,civilian_testimony})"
+    },
+    "inquiry_count": {
+      "source": "v01",
+      "update": "每个绑定 prompt 同时触发 ask_*"
+    },
+    "knowledge_debt": {
+      "source": "v01+v02",
+      "update": "风险效果增量"
+    }
+  },
+  "ending_priority": [
+    "ending_truth",
+    "ending_divergent",
+    "ending_canonical"
+  ],
+  "fallback": {
+    "ending": "ending_canonical",
+    "when": "no higher-priority ending condition matches"
+  },
+  "prompt_effects": {
+    "route_explain": {
+      "requires_any": [
+        "route_map_fragment",
+        "route_map"
+      ],
+      "ask_effect": "ask_context",
+      "verify_effect": "verify_route",
+      "consume": "consume_shan_question"
+    },
+    "recall_chain": {
+      "requires": [
+        "military_order"
+      ],
+      "ask_effect": "ask_fact",
+      "verify_effect": "verify_recall_chain",
+      "consume": "consume_shan_question"
+    },
+    "recipient_identity": {
+      "requires": [
+        "recall_recipient_token"
+      ],
+      "ask_effect": "ask_counterfactual",
+      "verify_effect": "verify_recipient",
+      "consume": "consume_shan_question"
+    },
+    "testimony_meaning": {
+      "requires": [
+        "civilian_testimony"
+      ],
+      "ask_effect": "ask_context",
+      "verify_effect": "verify_testimony",
+      "consume": "consume_shan_question"
+    },
+    "letter_chain": {
+      "requires": [
+        "family_letter"
+      ],
+      "ask_effect": "ask_fact",
+      "verify_effect": "verify_route",
+      "consume": "consume_shan_question"
+    }
+  },
+  "nodes_patch": [
+    {
+      "id": "s05_station",
+      "entry_conditions": {
+        "any": [
+          "s04_arrival",
+          "route_history_continues"
+        ]
+      }
+    },
+    {
+      "id": "s06_ferry",
+      "entry_conditions": {
+        "any": [
+          "s05_station_complete",
+          "s04_arrival"
+        ]
+      }
+    },
+    {
+      "id": "s07_military_town",
+      "entry_conditions": {
+        "any": [
+          "s06_ferry_complete",
+          "s05_station_complete"
+        ]
+      }
+    },
+    {
+      "id": "s09_1141_gate",
+      "entry_conditions": {
+        "all": [
+          {
+            "gte": [
+              "evidence_completeness",
+              2
+            ]
+          },
+          {
+            "gte": [
+              "inquiry_count",
+              1
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

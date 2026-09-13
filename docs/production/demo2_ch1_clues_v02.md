@@ -23,3 +23,12 @@
 - 刘看山没有对应道具时回答 `insufficient`，不产生解锁 effect。
 - 漏掉关键道具不 Game Over，反馈必须说明失去的具体路线。
 - 每个调查地点至少三个调查对象，至少一个选择存在收益与代价。
+
+## v0.2.1 字段与提问真源
+
+- `clues_found` 是已拾取物证的唯一真源；所有 `find_*` 使用去重追加，`evidence_completeness` 由四类物证去重数量派生，不再使用绝对 set。
+- `clue_fragments` 记录调查碎片，拾取物证时同步写入；`verified_clues` 只记录刘看山确认后的证据。
+- 四次提问预算初值为 4。每个 prompt 必须绑定 `ask_*`、验证 effect 和 `consume_shan_question`；消耗同时使 `inquiry_count +1`。
+- 结局优先级：`ending_truth > ending_divergent > ending_canonical`；无特殊条件时回退 `ending_canonical`。
+- `knowledge_debt` 的风险来源包括未验证介入、使用不可靠送达、介入并改变信息链；真相线要求 `knowledge_debt <= 2`。
+- `s06` 的 `ferry_action` 互斥组保证保存证言与查看船夫名册必须取舍。

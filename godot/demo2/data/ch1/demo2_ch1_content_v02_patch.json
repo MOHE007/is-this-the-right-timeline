@@ -10,13 +10,64 @@
       "title": "第二幕｜驿站的家书｜调查",
       "investigation": {
         "objects": [
-          {"id": "station_letter", "label": "查看无官印家书", "effects": ["find_family_letter"], "once": true},
-          {"id": "old_station_plate", "label": "查看旧驿牌", "effects": ["find_route_map_fragment"], "once": true},
-          {"id": "old_postman", "label": "询问老驿卒送信路线", "effects": ["find_route_map", "ask_context"], "once": true}
+          {
+            "id": "station_letter",
+            "label": "查看无官印家书",
+            "effects": [
+              "find_family_letter"
+            ],
+            "once": true
+          },
+          {
+            "id": "old_station_plate",
+            "label": "查看旧驿牌",
+            "effects": [
+              "find_route_map_fragment"
+            ],
+            "once": true
+          },
+          {
+            "id": "old_postman",
+            "label": "询问老驿卒送信路线",
+            "effects": [
+              "find_route_map",
+              "ask_context"
+            ],
+            "once": true
+          }
         ],
-        "leave_effects": ["remember_missed_clue:family_letter"]
+        "leave_effects": [
+          {
+            "effect": "remember_missed_clue_if_absent",
+            "clue_id": "family_letter"
+          }
+        ]
       },
-      "shan_prompts": ["route_explain", "letter_chain"],
+      "shan_prompts": [
+        {
+          "id": "route_explain",
+          "requires": [
+            "route_map_fragment",
+            "route_map"
+          ],
+          "effects": [
+            "ask_context",
+            "verify_route",
+            "consume_shan_question"
+          ]
+        },
+        {
+          "id": "letter_chain",
+          "requires": [
+            "family_letter"
+          ],
+          "effects": [
+            "ask_fact",
+            "verify_route",
+            "consume_shan_question"
+          ]
+        }
+      ],
       "fallback_feedback": "你记住了驿站的位置，却没有留下这封信。"
     },
     {
@@ -24,13 +75,65 @@
       "title": "第二幕｜渡口的证言｜调查",
       "investigation": {
         "objects": [
-          {"id": "migrant_witness", "label": "保存迁徙者证言", "effects": ["hear_civilian_testimony"], "once": true},
-          {"id": "wet_route_map", "label": "拾取湿路线图", "effects": ["find_route_map_fragment"], "once": true},
-          {"id": "ferry_register", "label": "查看船夫名册", "effects": ["record_ferry_register"], "once": true}
+          {
+            "id": "migrant_witness",
+            "label": "保存迁徙者证言",
+            "effects": [
+              "hear_civilian_testimony"
+            ],
+            "once": true,
+            "exclusive_group": "ferry_action"
+          },
+          {
+            "id": "wet_route_map",
+            "label": "拾取湿路线图",
+            "effects": [
+              "find_route_map_fragment"
+            ],
+            "once": true
+          },
+          {
+            "id": "ferry_register",
+            "label": "查看船夫名册",
+            "effects": [
+              "record_ferry_register"
+            ],
+            "once": true,
+            "exclusive_group": "ferry_action"
+          }
         ],
-        "leave_effects": ["remember_missed_clue:civilian_testimony"]
+        "leave_effects": [
+          {
+            "effect": "remember_missed_clue_if_absent",
+            "clue_id": "civilian_testimony"
+          }
+        ]
       },
-      "shan_prompts": ["testimony_meaning", "route_explain"],
+      "shan_prompts": [
+        {
+          "id": "testimony_meaning",
+          "requires": [
+            "civilian_testimony"
+          ],
+          "effects": [
+            "ask_context",
+            "verify_testimony",
+            "consume_shan_question"
+          ]
+        },
+        {
+          "id": "route_explain",
+          "requires": [
+            "route_map_fragment",
+            "route_map"
+          ],
+          "effects": [
+            "ask_context",
+            "verify_route",
+            "consume_shan_question"
+          ]
+        }
+      ],
       "fallback_feedback": "你没有留下原话，刘看山无法替你证明这段证言。"
     },
     {
@@ -38,14 +141,66 @@
       "title": "第三幕｜军镇里的军书｜调查",
       "investigation": {
         "objects": [
-          {"id": "military_order", "label": "查看缺页军书", "effects": ["find_military_order"], "once": true},
-          {"id": "recall_recipient_token", "label": "拾取传令牌", "effects": ["find_recall_recipient_token"], "once": true},
-          {"id": "military_companion", "label": "询问谁有执行能力", "effects": ["find_recall_recipient", "gain_military_trust", "ask_counterfactual"], "once": true}
+          {
+            "id": "military_order",
+            "label": "查看缺页军书",
+            "effects": [
+              "find_military_order"
+            ],
+            "once": true
+          },
+          {
+            "id": "recall_recipient_token",
+            "label": "拾取传令牌",
+            "effects": [
+              "find_recall_recipient_token"
+            ],
+            "once": true
+          },
+          {
+            "id": "military_companion",
+            "label": "询问谁有执行能力",
+            "effects": [
+              "find_recall_recipient",
+              "gain_military_trust",
+              "ask_counterfactual"
+            ],
+            "once": true
+          }
         ],
-        "leave_effects": ["remember_missed_clue:recall_recipient_token"]
+        "leave_effects": [
+          {
+            "effect": "remember_missed_clue_if_absent",
+            "clue_id": "recall_recipient_token"
+          }
+        ]
       },
-      "shan_prompts": ["recall_chain", "recipient_identity"],
+      "shan_prompts": [
+        {
+          "id": "recall_chain",
+          "requires": [
+            "military_order"
+          ],
+          "effects": [
+            "ask_fact",
+            "verify_recall_chain",
+            "consume_shan_question"
+          ]
+        },
+        {
+          "id": "recipient_identity",
+          "requires": [
+            "recall_recipient_token"
+          ],
+          "effects": [
+            "ask_counterfactual",
+            "verify_recipient",
+            "consume_shan_question"
+          ]
+        }
+      ],
       "fallback_feedback": "你知道命令存在，却没有找到能把它送到正确的人。"
     }
-  ]
+  ],
+  "提示语门槛": "1141：物证、路线、看得懂召回链、能行动的人。"
 }
