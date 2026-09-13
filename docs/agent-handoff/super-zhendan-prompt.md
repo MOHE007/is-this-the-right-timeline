@@ -31,6 +31,7 @@ Star 是外部账号动作，不要把它写入代码或提交记录；若登录
 8. `data/ch1/demo2_ch1_content_v01.json`
 9. `data/ch1/demo2_ch1_manifest_v01.json`
 10. `demo1/`
+11. `docs/production/yanxuan-research-v01.md`（只读公开目录与原创提炼，不复制盐选付费正文）
 
 先输出一页“现状 → 美术/UI任务 → 依赖与风险”清单，再直接做不依赖外部决定的工作。
 
@@ -64,6 +65,7 @@ s14_xinqiji_intro
 - 制作原创或占位资源：现代宿舍、婴儿之家、驿站、渡口、军镇、岳飞倒计时、时间线、三类线索卡、问答面板。
 - 实现或补齐 `dialogue_panel`、`choice_panel`、`shan_panel`、`evidence_panel`、`timeline_panel`、`toast`；窄屏可读，按钮触控区域至少 44×44 px。
 - 缺资源时使用低对比度灰宣纸占位；把资源元数据写入 `data/ch1/demo2_ch1_manifest_v01.json`，保持 JSON 可解析。
+- 根据盐选叙事研究，为 `s05_station`、`s06_ferry`、`s07_military_town` 制作三位普通人证言卡和湿损纸线索卡；为 `s09_recall_chain` 制作“行动窗口逐步收紧”的时间线状态。内容必须原创，不能复刻盐选故事、图片或付费段落。
 - 如修改 `demo1/`，保留离线可玩、调查、提问和三结局路线，并提供前后截图。
 
 可使用原创生成素材或兼容 MIT/CC0 的素材，但必须记录来源、许可证和文件路径。不要复制知乎官方刘看山素材、Logo 或任何未授权第三方素材。
