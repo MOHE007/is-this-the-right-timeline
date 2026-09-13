@@ -10,6 +10,8 @@
 - **刘看山问答**（工作包 E）：本地问答库 `data/ch1/demo2_ch1_shan_answers_v02.json`（三段式 fact/context/counter_question）；预算 3 次；缺道具返回 `insufficient` 且照常消耗；耗尽返回 `exhausted`；离线可完整通关。
 - **条件路由**：`ending_rules_patch` 把 s11 门槛别名到 `divergent_ready_v02`/`truth_ready_v02`——特殊结局必须经过真实验证；三门全锁时提供「普通收束」兜底（运行时桥，待 content v03 正式节点），漏线索不 Game Over。
 - **冒烟测试 5/5**（工作包 G 五条路径）：完整验证→divergent；有物证无验证→不得进 divergent、走普通收束；四证+证言解读→truth；全程不调查→canonical+错过记录；提问耗尽→不死锁。见 `docs/run-2026-09-14-exploration/smoke_test_5routes.log`。
+- **锁定门槛动态缺项反馈（N7）**：锁定的路线按钮在提示区逐项显示缺失（如「还缺：理解召回链、选择介入路线、交付预警」），见 `docs/run-2026-09-14-exploration/03_s11_outcome_router_gate_hint.png`。
+- **对 Marvis v0.2 复验的逐条回应**：`docs/production/demo2_runtime_response_marvis_v02.md`（N1/N2/N3/N5/N6/N8/N9 运行时已桥接并附实证；N4、软门槛、knowledge_debt、S1 史实项移交 Codex/Marvis/王凯）。
 - **对 Marvis 阻塞项的实证**：S2-4——divergent 完整链只需 2 次提问（执行者可由「询问军中同伴」免费获得），预算 3 次数学成立；S2-5——同时满足时 s11 由玩家选择，不会死锁，判定序 truth > divergent > canonical 建议写入 v03 契约。
 
 | s05 调查+刘看山验证 | s07 调查面板 |

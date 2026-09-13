@@ -28,6 +28,23 @@ const FRAGMENT_NAMES := {
     "route_map_fragment": "路线碎片",
     "ferry_register": "船夫名册",
 }
+const CONDITION_LABELS := {
+    "route_verified": "路线经刘看山验证",
+    "recall_recipient_found": "找到可靠接收者",
+    "shan_answer_recall": "理解召回链",
+    "testimony_interpreted": "证言经刘看山解读",
+    "information_chain_complete": "信息链完整",
+    "divergent_ready_v02": "偏离线四项验证",
+    "truth_ready_v02": "真相线验证",
+    "route_divergent": "介入线（已介入并交付预警）",
+    "route_truth": "见证线（保存证言并提问三次）",
+    "route_history_continues": "见证线",
+    "always_after_1142": "到达 1142 年之后",
+    "three_inquiry_types": "问过事实/背景/反事实",
+    "all_four_clues": "集齐四类物证",
+    "divergent_ready": "偏离线验证",
+    "truth_ready": "真相线验证",
+}
 
 var content: Dictionary = {}
 var contract: Dictionary = {}
@@ -437,6 +454,7 @@ func _show_beat(beat: Dictionary) -> void:
     if not choices.is_empty():
         continue_button.visible = false
         waiting_for_choice = false
+        var first_locked_hint := ""
         for choice in choices:
             var available := _choice_available(choice)
             if available:
@@ -446,9 +464,17 @@ func _show_beat(beat: Dictionary) -> void:
             button.custom_minimum_size = Vector2(320, 42)
             button.disabled = not available
             if not available:
-                button.tooltip_text = "条件未满足：" + str(choice.get("condition", choice.get("conditions", "未知")))
+                # N7: tell the player exactly which evidence link is missing
+                # instead of a silent locked button.
+                var missing := _failures_for_choice(choice)
+                var missing_text := "、".join(missing) if not missing.is_empty() else "条件未满足"
+                button.tooltip_text = "还缺：" + missing_text
+                if first_locked_hint.is_empty():
+                    first_locked_hint = "『%s』还缺：%s" % [str(choice.get("label", "")), missing_text]
             button.pressed.connect(_choose.bind(choice))
             choices_box.add_child(button)
+        if not first_locked_hint.is_empty():
+            choice_hint_label.text = first_locked_hint
         if not waiting_for_choice:
             _offer_fallback_route(choices)
     _update_status()
@@ -548,6 +574,82 @@ func _condition_group(group: Dictionary) -> bool:
         if not any_ok:
             return false
     return true
+
+func _failures_for_choice(choice: Dictionary) -> PackedStringArray:
+    # N7: collect the unmet leaves of a locked choice's gate so the player
+    # sees which evidence link is missing.
+    var out := PackedStringArray()
+    var raw_condition = choice.get("condition")
+    if raw_condition is String and not raw_condition.is_empty():
+        _collect_failures_named(raw_condition, out)
+    var grouped = choice.get("conditions", null)
+    if grouped is Dictionary:
+        _collect_failures_group(grouped, out)
+    return out
+
+func _collect_failures_named(name: String, out: PackedStringArray) -> void:
+    if _condition_named(name):
+        return
+    if conditions_catalog.has(name):
+        var group = conditions_catalog[name]
+        if group is Dictionary and group.has("all"):
+            var before := out.size()
+            _collect_failures_group(group, out)
+            if out.size() > before:
+                return
+    var label := str(CONDITION_LABELS.get(name, name))
+    if label not in out:
+        out.append(label)
+
+func _collect_failures_group(group: Dictionary, out: PackedStringArray) -> void:
+    if group.has("eq") or group.has("gte") or group.has("lte") or group.has("contains"):
+        if not _condition_expression(group):
+            var label := _expression_label(group)
+            if label not in out:
+                out.append(label)
+        return
+    for item in group.get("all", []):
+        if item is String:
+            _collect_failures_named(item, out)
+        elif item is Dictionary:
+            _collect_failures_group(item, out)
+
+func _expression_label(expression: Dictionary) -> String:
+    if expression.has("contains"):
+        var pair = expression["contains"]
+        if pair is Array and pair.size() == 2:
+            var value := str(pair[1])
+            return "拾取" + str(CLUE_NAMES.get(value, FRAGMENT_NAMES.get(value, value)))
+    if expression.has("gte"):
+        var pair = expression["gte"]
+        if pair is Array and pair.size() == 2:
+            match str(pair[0]):
+                "evidence_completeness": return "物证 ≥ %s" % str(pair[1])
+                "inquiry_count": return "提问 ≥ %s" % str(pair[1])
+                "trust_military": return "军中信任 ≥ %s" % str(pair[1])
+                "year": return "到达 %s 年" % str(pair[1])
+            return "%s ≥ %s" % [str(pair[0]), str(pair[1])]
+    if expression.has("lte"):
+        var pair = expression["lte"]
+        if pair is Array and pair.size() == 2:
+            if str(pair[0]) == "knowledge_debt":
+                return "知识债 ≤ %s" % str(pair[1])
+            return "%s ≤ %s" % [str(pair[0]), str(pair[1])]
+    if expression.has("eq"):
+        var pair = expression["eq"]
+        if pair is Array and pair.size() == 2:
+            var key := str(pair[0])
+            match key:
+                "branch": return "选择介入路线" if str(pair[1]) == "intervene" else "选择见证路线"
+                "warning_delivered": return "交付预警"
+                "recall_delayed": return "召回被延迟"
+                "testimony_saved": return "保存证言"
+                "route_verified": return "路线经刘看山验证"
+                "recall_recipient_found": return "找到可靠接收者"
+                "shan_answer_recall": return "理解召回链"
+                "testimony_interpreted": return "证言经刘看山解读"
+            return str(CONDITION_LABELS.get(key, key))
+    return "条件未满足"
 
 func _condition_expression(expression: Dictionary) -> bool:
     if expression.has("eq"):

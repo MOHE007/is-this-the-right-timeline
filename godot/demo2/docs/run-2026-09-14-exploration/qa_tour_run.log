@@ -46,7 +46,7 @@ TOUR action=41 scene=s14_xinqiji_intro beat=3
 TOUR action=42 scene=s14_xinqiji_intro beat=4
 ----------------
 Done recording movie at path: /tmp/demo2_tour_v02/frame.png
-258 frames at 10 FPS (movie length: 00:00:25), recorded in 00:00:18 (138% of real-time speed).
-CPU time: 0.18 seconds (average: 0.69 ms/frame)
+258 frames at 10 FPS (movie length: 00:00:25), recorded in 00:00:26 (96% of real-time speed).
+CPU time: 0.23 seconds (average: 0.91 ms/frame)
 GPU time: 0.00 seconds (average: 0.00 ms/frame)
 ----------------
