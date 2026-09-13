@@ -1,3 +1,14 @@
+---
+AIGC:
+    Label: "1"
+    ContentProducer: 001191440300708461136T1XGW3
+    ProduceID: bf570042b9bab5ca445e13766da77718_7be6d1c2afa011f18f50525400aeaaa3
+    ReservedCode1: 8OVntxtTqIcanfN8/QvvdqX/1anJndGT8D3qiaLb4bj8aPLjfAmQtq6BZzqk28eVUPZcHrsRxC4kNU7ze0cS9vAVfvEOjM2au2Xbxh4MPqBzMI/eA6smY31gwRS0ZjHJAoRlh22EWxCL4HwgnaY0fg3y1t8nmCUjdW+mCDjlP4+/ogBxLrEkerKg6+0=
+    ContentPropagator: 001191440300708461136T1XGW3
+    PropagateID: bf570042b9bab5ca445e13766da77718_7be6d1c2afa011f18f50525400aeaaa3
+    ReservedCode2: 8OVntxtTqIcanfN8/QvvdqX/1anJndGT8D3qiaLb4bj8aPLjfAmQtq6BZzqk28eVUPZcHrsRxC4kNU7ze0cS9vAVfvEOjM2au2Xbxh4MPqBzMI/eA6smY31gwRS0ZjHJAoRlh22EWxCL4HwgnaY0fg3y1t8nmCUjdW+mCDjlP4+/ogBxLrEkerKg6+0=
+---
+
 # 团队公告 — Demo2 第一章 v0.2 交付复验结论
 
 **日期**：2026-09-14
@@ -65,3 +76,4 @@ v0.1 审校 9 项阻塞意见，6 项未处理；验收前置条件通过率 **1
 ---
 
 **完整报告**：`demo2_ch1_marvis_review_v02.md`（仓库 + 知识库同步）
+*（内容由AI生成，仅供参考）*
