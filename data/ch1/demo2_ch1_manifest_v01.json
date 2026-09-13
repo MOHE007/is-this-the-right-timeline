@@ -15,6 +15,6 @@
   "endings": ["ending_divergent", "ending_canonical", "ending_truth"],
   "assets": {
     "visual_style": "ink_wash_southern_song",
-    "required": ["assets/promo-ink-timeline.svg", "assets/demo1-preview.svg"]
+    "required": ["assets/promo-ink-timeline.png", "assets/demo1-preview.svg"]
   }
 }

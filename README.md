@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/promo-ink-timeline.svg" alt="水墨时间线宣传图" width="100%" />
+<img src="assets/promo-ink-timeline.png" alt="宋金对峙主题水墨宣传图" width="100%" />
 
 # 《这真的是对的时间线吗？》
 
