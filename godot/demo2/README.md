@@ -56,4 +56,4 @@ godot --path . --write-movie /tmp/demo2_tour/frame.png --fixed-fps 10 --resoluti
 - `_finish` 的多行结束语会溢出 90px 高的对话框（占位阶段可接受，接 UI 资源时随对话框重做）。
 - Web 导出需捆绑 CJK 字体（默认字体不含中文，桌面端靠系统回退）。
 
-仍待完成：完整刘看山本地问答适配、保存点、窄窗口检查和 Web 导出。
+仍待完成：完整刘看山本地问答适配、保存点、窄窗口检查和 Web 导出；Godot 桌面端占位流程已完成实跑与三路线冒烟验证。

@@ -95,14 +95,14 @@ is-this-the-right-timeline/
 
 ## 🧪 Demo2 Godot 占位运行时
 
-`godot/demo2/` 已建立最小 Godot 4.x 工程，加载 `data/ch1/` 的内容与状态 JSON，先用占位画面验证 14 个场景和选择推进。梁博森的最终美术通过 `resource_id` 接入 `godot/demo2/assets/art/`，不需要改剧情数据。当前待 DSH Desktop 使用 Godot 4.x 实际运行并回填构建日志。
+`godot/demo2/` 已建立最小 Godot 4.x 工程，加载 `data/ch1/` 的内容与状态 JSON，使用占位画面验证 14 个场景和选择推进。梁博森的最终美术通过 `resource_id` 接入 `godot/demo2/assets/art/`，不需要改剧情数据。Godot 4.3 实跑、三路线冒烟测试和截图已归档到 `godot/demo2/docs/run-2026-09-13/`。
 
 ## 🗺 Roadmap
 
 | 里程碑 | 状态 | 交付物 |
 | --- | --- | --- |
 | **M0 · 方向冻结** | ✅ 已达成 | 引擎路线、视觉方向、三章玩法框架 |
-| **M1 · 第一章垂直切片** | 🔄 Godot 占位工程已建立 | 剧本、分镜、角色卡、线索卡、状态/内容 JSON、实现规格；待美术接入与 Godot 实跑 QA |
+| **M1 · 第一章垂直切片** | 🔄 Godot 占位流程已验证 | 剧本、分镜、角色卡、线索卡、状态/内容 JSON、实现规格；待美术接入、字体和 Web 导出 QA |
 | M2 · 第二章原型 | ⏳ 计划中 | 戚家军横版动作核心循环 |
 | M3 · 第三章原型 | ⏳ 计划中 | 淞沪 3D 探索核心循环 |
 | M4 · 三章串联 | ⏳ 计划中 | 选择与记忆跨章节传递 |
