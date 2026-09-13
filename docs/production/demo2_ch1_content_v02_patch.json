@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "id": "demo2_ch1_content_patch",
+  "version": "v02",
+  "base_content": "demo2_ch1_content_v01.json",
+  "merge_rule": "replace scenes by id; keep all unspecified scenes from v01",
+  "scenes": [
+    {
+      "id": "s05_station",
+      "title": "第二幕｜驿站的家书｜调查",
+      "investigation": {
+        "objects": [
+          {"id": "station_letter", "label": "查看无官印家书", "effects": ["find_family_letter"], "once": true},
+          {"id": "old_station牌", "label": "查看旧驿牌", "effects": ["find_route_map_fragment"], "once": true},
+          {"id": "old_postman", "label": "询问老驿卒送信路线", "effects": ["find_route_map", "ask_context"], "once": true}
+        ],
+        "leave_effects": ["remember_missed_clue:family_letter"]
+      },
+      "shan_prompts": ["route_explain", "letter_chain"],
+      "fallback_feedback": "你记住了驿站的位置，却没有留下这封信。"
+    },
+    {
+      "id": "s06_ferry",
+      "title": "第二幕｜渡口的证言｜调查",
+      "investigation": {
+        "objects": [
+          {"id": "migrant_witness", "label": "保存迁徙者证言", "effects": ["hear_civilian_testimony"], "once": true},
+          {"id": "wet_route_map", "label": "拾取湿路线图", "effects": ["find_route_map_fragment"], "once": true},
+          {"id": "ferry_register", "label": "查看船夫名册", "effects": ["record_ferry_register"], "once": true}
+        ],
+        "leave_effects": ["remember_missed_clue:civilian_testimony"]
+      },
+      "shan_prompts": ["testimony_meaning", "route_explain"],
+      "fallback_feedback": "你没有留下原话，刘看山无法替你证明这段证言。"
+    },
+    {
+      "id": "s07_military_town",
+      "title": "第三幕｜军镇里的军书｜调查",
+      "investigation": {
+        "objects": [
+          {"id": "military_order", "label": "查看缺页军书", "effects": ["find_military_order"], "once": true},
+          {"id": "recall_recipient_token", "label": "拾取传令牌", "effects": ["find_recall_recipient_token"], "once": true},
+          {"id": "military_companion", "label": "询问谁有执行能力", "effects": ["find_recall_recipient", "gain_military_trust", "ask_counterfactual"], "once": true}
+        ],
+        "leave_effects": ["remember_missed_clue:recall_recipient_token"]
+      },
+      "shan_prompts": ["recall_chain", "recipient_identity"],
+      "fallback_feedback": "你知道命令存在，却没有找到能把它送到正确的人。"
+    }
+  ]
+}
