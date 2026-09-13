@@ -225,7 +225,10 @@ func _choose(choice: Dictionary) -> void:
         return
     for effect in choice.get("effects", []):
         _apply_effect(str(effect))
-    var next_id := str(choice.get("next_scene_id", ""))
+    # JSON null must mean "stay in scene"; str(null) would otherwise route to
+    # a bogus "<null>" scene (seen in s14 terminal choice).
+    var raw_next = choice.get("next_scene_id")
+    var next_id: String = raw_next if raw_next is String else ""
     if next_id.is_empty():
         # A terminal choice may still be followed by beats in the same scene
         # (the 1161 Xin Qiji entrance uses this for its final prompt).
@@ -240,7 +243,10 @@ func _choose(choice: Dictionary) -> void:
         _enter_scene(next_id)
 
 func _choice_available(choice: Dictionary) -> bool:
-    var named := str(choice.get("condition", ""))
+    # JSON null must mean "no condition"; str(null) would otherwise become
+    # "<null>" and permanently lock the choice (seen in s08 ask_fact).
+    var raw_condition = choice.get("condition")
+    var named: String = raw_condition if raw_condition is String else ""
     if not named.is_empty() and not _condition_named(named):
         return false
     var grouped = choice.get("conditions", null)
@@ -330,9 +336,16 @@ func _apply_effect(effect: String) -> void:
             runtime["inquiry_types"] = inquiry_types
         "gain_military_trust":
             runtime["trust_military"] = int(runtime.get("trust_military", 0)) + 1
-        "choose_intervene", "resolve_intervention_branch":
+        "choose_intervene":
             runtime["branch"] = "intervene"
             runtime["intervention_attempted"] = true
+        "resolve_intervention_branch":
+            # s10 applies this on BOTH routes. The state contract writes
+            # branch="intervene", but doing that unconditionally would
+            # overwrite the witness branch and dead-end s11 (canonical and
+            # truth endings unreachable). Only confirm an actual intervention.
+            if str(runtime.get("branch", "")) == "intervene":
+                runtime["intervention_attempted"] = true
         "choose_witness":
             runtime["branch"] = "witness"
         "choose_leave":
@@ -350,8 +363,8 @@ func _apply_effect(effect: String) -> void:
             runtime["ending_id"] = "ending_divergent"
         "set_ending_truth":
             runtime["ending_id"] = "ending_truth"
-        "_":
-            pass
+        _:
+            push_warning("Unknown effect ignored: " + effect)
 
 func _add_clue(clue_id: String) -> void:
     var clues: Array = runtime.get("clues_found", [])
@@ -366,8 +379,13 @@ func _clear_choices() -> void:
 
 func _update_status() -> void:
     clue_label.text = "线索 %d/4   ·   提问 %d   ·   信任 %d" % [int(runtime.get("evidence_completeness", 0)), int(runtime.get("inquiry_count", 0)), int(runtime.get("trust_military", 0))]
-    var ending := str(runtime.get("ending_id", ""))
-    var branch := str(runtime.get("branch", "canonical"))
+    # initial_state carries explicit JSON nulls for branch/ending_id.
+    var ending_raw = runtime.get("ending_id")
+    var ending: String = ending_raw if ending_raw is String else ""
+    var branch_raw = runtime.get("branch")
+    var branch: String = branch_raw if branch_raw is String else "canonical"
+    if branch.is_empty():
+        branch = "canonical"
     status_label.text = "占位运行时 · %s%s" % [branch, (" · " + ending) if not ending.is_empty() else ""]
 
 func _finish(message: String) -> void:

@@ -1,0 +1,10 @@
+Godot Engine v4.3.stable.official.77dcf97d8 - https://godotengine.org
+OpenGL API 4.1 Metal - 90.5 - Compatibility - Using Device: Apple - Apple M2
+
+Movie Maker mode enabled, recording movie at 10 FPS...
+----------------
+Done recording movie at path: /tmp/demo2_shots/frame.png
+25 frames at 10 FPS (movie length: 00:00:02), recorded in 00:00:02 (100% of real-time speed).
+CPU time: 0.01 seconds (average: 0.23 ms/frame)
+GPU time: 0.00 seconds (average: 0.00 ms/frame)
+----------------

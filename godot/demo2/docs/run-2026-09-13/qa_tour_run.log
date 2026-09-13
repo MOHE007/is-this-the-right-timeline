@@ -1,0 +1,42 @@
+Godot Engine v4.3.stable.official.77dcf97d8 - https://godotengine.org
+OpenGL API 4.1 Metal - 90.5 - Compatibility - Using Device: Apple - Apple M2
+
+Movie Maker mode enabled, recording movie at 10 FPS...
+TOUR action=1 scene=s01_modern_article beat=1
+TOUR action=2 scene=s02_baby_home beat=0
+TOUR action=3 scene=s02_baby_home beat=1
+TOUR action=4 scene=s02_baby_home beat=2
+TOUR action=5 scene=s03_baby_liushanshan beat=0
+TOUR action=6 scene=s03_baby_liushanshan beat=1
+TOUR action=7 scene=s03_baby_liushanshan beat=2
+TOUR action=8 scene=s04_growth_1127 beat=0
+TOUR action=9 scene=s04_growth_1127 beat=1
+TOUR action=10 scene=s05_station beat=0
+TOUR action=11 scene=s05_station beat=1
+TOUR action=12 scene=s05_station beat=2
+TOUR action=13 scene=s06_ferry beat=0
+TOUR action=14 scene=s06_ferry beat=1
+TOUR action=15 scene=s07_military_town beat=0
+TOUR action=16 scene=s07_military_town beat=1
+TOUR action=17 scene=s07_military_town beat=2
+TOUR action=18 scene=s08_yuefei_countdown beat=0
+TOUR action=19 scene=s08_yuefei_countdown beat=1
+TOUR action=20 scene=s08_yuefei_countdown beat=2
+TOUR action=21 scene=s09_recall_chain beat=0
+TOUR action=22 scene=s09_recall_chain beat=1
+TOUR action=23 scene=s10_intervention beat=0
+TOUR action=24 scene=s10_intervention beat=1
+TOUR action=25 scene=s11_outcome_router beat=0
+TOUR action=26 scene=s11_outcome_router beat=1
+TOUR action=27 scene=s12_leave_or_continue beat=0
+TOUR action=28 scene=s14_xinqiji_intro beat=0
+TOUR action=29 scene=s14_xinqiji_intro beat=1
+TOUR action=30 scene=s14_xinqiji_intro beat=2
+TOUR action=31 scene=s14_xinqiji_intro beat=3
+TOUR action=32 scene=s14_xinqiji_intro beat=4
+----------------
+Done recording movie at path: /tmp/demo2_tour/frame.png
+198 frames at 10 FPS (movie length: 00:00:19), recorded in 00:00:09 (211% of real-time speed).
+CPU time: 0.06 seconds (average: 0.31 ms/frame)
+GPU time: 0.00 seconds (average: 0.00 ms/frame)
+----------------
