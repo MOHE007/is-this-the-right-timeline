@@ -74,6 +74,12 @@ function userRequestConfig(accessSecret, oauthToken, url) {
 export function createOAuth(config) {
   const sessions = new Map();
   const oauthConfig = config.oauth;
+  // Deployed instances read the callback URL from the platform env, so a URL
+  // change never requires rebuilding the image; local runs fall back to the
+  // value written by configure_callback.mjs into hackathon.config.json.
+  if (process.env.ZHIHU_REDIRECT_URI) {
+    oauthConfig.redirectUri = process.env.ZHIHU_REDIRECT_URI;
+  }
 
   function session(request, response) {
     let id = cookieId(request);

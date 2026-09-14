@@ -5,7 +5,7 @@
   "oauth": {
     "enabled": true,
     "appId": "496",
-    "redirectUri": null,
+    "redirectUri": "https://ifesrjkdxats.cloud.sealos.io/auth/callback",
     "credentialService": "zhihu-hackathon:这真的是对的时间线吗:ca830503c8",
     "credentialAccount": "oauth-app-key"
   },
