@@ -36,3 +36,14 @@ jobs:
           path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      # jsDelivr fetches objects from GitHub on first request and that origin is
+      # slow for some regions, which made the wasm parts stall for players.
+      # Warm the edge cache from the runner (fast egress) so visitors hit a hot
+      # cache. Re-run this whenever demo2-web changes.
+      - name: Warm the jsDelivr cache
+        run: |
+          BASE="https://cdn.jsdelivr.net/gh/${GITHUB_REPOSITORY}@main/demo2-web"
+          for f in index.html index.js index.pck index.wasm.part1 index.wasm.part2 index.wasm.part3; do
+            curl -sf -o /dev/null "$BASE/$f" && echo "warm ok: $f" || echo "warm failed: $f"
+          done
