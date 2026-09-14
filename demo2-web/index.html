@@ -95,6 +95,33 @@ body {
 			<div id="status-notice"></div>
 		</div>
 
+		<script>
+// CDN shim: rebuild index.wasm from 2 parts before the engine loads.
+(function () {
+  var PARTS = 2;
+  var originalFetch = window.fetch.bind(window);
+  window.fetch = function (input, init) {
+    var url = typeof input === "string" ? input : (input && input.url) || "";
+    if (!/index\.wasm([?#]|$)/.test(url)) return originalFetch(input, init);
+    var base = url.replace(/index\.wasm([?#].*)?$/, "");
+    var jobs = [];
+    for (var i = 1; i <= PARTS; i += 1) {
+      jobs.push(originalFetch(base + "index.wasm.part" + i).then(function (r) {
+        if (!r.ok) throw new Error("wasm part HTTP " + r.status);
+        return r.arrayBuffer();
+      }));
+    }
+    return Promise.all(jobs).then(function (buffers) {
+      var total = 0;
+      buffers.forEach(function (b) { total += b.byteLength; });
+      var merged = new Uint8Array(total);
+      var offset = 0;
+      buffers.forEach(function (b) { merged.set(new Uint8Array(b), offset); offset += b.byteLength; });
+      return new Response(merged, { status: 200, headers: { "Content-Type": "application/wasm" } });
+    });
+  };
+})();
+</script>
 		<script src="index.js"></script>
 		<script>
 const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":14197696,"index.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]};
