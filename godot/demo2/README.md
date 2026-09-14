@@ -1,6 +1,13 @@
 # Demo2 Godot 占位运行时（探索版 v0.2.1）
 
-这是《第一章 南宋意难平》的 Godot 4.x 接入工程。当前为探索版：JSON 契约（v01 基础 + v0.2.1 补丁）驱动 14 个场景、调查对象、拾取/验证状态、刘看山有限问答、条件路由、存档/读档和 Web 导出，画面仍用占位资源。
+这是《第一章 南宋意难平》的 Godot 4.x 接入工程。当前为探索版：JSON 契约（v01 基础 + v0.2.2 补丁）驱动 14 个场景、调查对象、拾取/验证状态、刘看山有限问答、条件路由、存档/读档和 Web 导出。场景背景与 UI 仍以占位资源为主，刘看山三态角色动画已经接入。
+
+## 刘看山角色动画（2026-09-14）
+
+- `CHAR_LIUSHAN_WHITE` 已接入 `idle`、`question`、`reminder` 三态透明动画，位于 `assets/art/characters/liushan/`。
+- 成功提问播放电脑动作；信息不足或次数耗尽播放提醒动作；随后自动返回循环待机。
+- s01/s02 隐藏，s03 起显示在画面中部留白区，不占调查、提问与对白控件。
+- 素材授权、原始包校验值与动作映射见 `assets/art/characters/liushan/SOURCE.md`；制作与回归记录见 `docs/production/demo2_ch1_liushan_asset_integration_v01.md`。
 
 ## v0.2.1 契约消费与 H 向交付（2026-09-14 回填）
 
@@ -67,7 +74,8 @@ godot --path . --write-movie /tmp/demo2_tour/frame.png --fixed-fps 10 --resoluti
 
 ## 美术接入位置
 
-- `assets/art/`：梁博森最终资源（目录已用 `.gitkeep` 保留）。
+- `assets/art/characters/liushan/`：刘看山三态动画已接入。
+- `assets/art/` 其他区域：梁博森场景、人物和 UI 最终资源继续按 manifest ID 接入。
 - 运行时由 `resource_id` 绑定资源，不改剧情 JSON 和场景 ID。
 - 新增 UI 槽位待接：调查按钮 hover、拾取 toast、线索卡「待验证/已验证」印章、刘看山能力面板（先用占位样式跑通）。
 
@@ -80,4 +88,4 @@ godot --path . --write-movie /tmp/demo2_tour/frame.png --fixed-fps 10 --resoluti
 - s11「普通收束」目前是运行时兜底按钮，建议 v03 在 content 中补正式节点与文案。
 - 三结局同时满足时的判定序（truth > divergent > canonical）待写入契约。
 
-仍待完成：保存点、窄窗口检查、Web 导出（捆绑 CJK 字体）、美术资源接入。
+仍待完成：刘看山动画的 Godot/Web 回归、窄窗口遮挡检查，以及其余场景、人物和 UI 正式美术资源接入。

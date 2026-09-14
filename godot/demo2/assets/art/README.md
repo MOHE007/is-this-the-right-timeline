@@ -5,7 +5,7 @@
 ```text
 BG_INK_BABY_HOME_1122.png
 UI_INK_DIALOGUE_FRAME.png
-CHAR_LIUSHAN_WHITE.png
+characters/liushan/idle/001.png
 ```
 
 建议格式：PNG（透明角色/UI）、JPG 或 WebP（大背景），长边 2048px 以内；保持 16:9 构图安全区，重要主体避开右侧选择区和底部对白区。
@@ -14,6 +14,8 @@ CHAR_LIUSHAN_WHITE.png
 
 - `BG_INK_BABY_HOME_1122`
 - `UI_INK_DIALOGUE_FRAME`
-- `CHAR_LIUSHAN_WHITE`
+- `CHAR_LIUSHAN_WHITE`（已接入三态动画：`idle` / `question` / `reminder`，20fps）
+
+刘看山动画位于 `characters/liushan/`。运行时逐帧读取透明 PNG；素材来源、状态映射和授权留痕见该目录的 `SOURCE.md` 与 `asset_manifest.json`。
 
 接入时只替换资源文件或 manifest 映射，不修改 `scene_id`、`ui_slot` 和剧情 JSON。

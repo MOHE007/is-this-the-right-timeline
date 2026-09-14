@@ -18,6 +18,12 @@ const STATE_PATCH_PATH := "res://data/ch1/demo2_ch1_state_v02.json"
 const MANIFEST_PATH := "res://data/ch1/demo2_ch1_manifest_v01.json"
 const SHAN_PATH := "res://data/ch1/demo2_ch1_shan_answers_v02.json"
 const SAVE_PATH := "user://demo2_ch1_save_v02.json"
+const SHAN_SPRITE_ROOT := "res://assets/art/characters/liushan"
+const SHAN_ANIMATION_FRAMES := {
+    "idle": 100,
+    "question": 120,
+    "reminder": 80,
+}
 
 const CLUE_NAMES := {
     "family_letter": "家书",
@@ -74,6 +80,7 @@ var invest_title: Label
 var invest_box: VBoxContainer
 var shan_title: Label
 var shan_box: VBoxContainer
+var shan_sprite: AnimatedSprite2D
 var dialogue_panel: PanelContainer
 var speaker_label: Label
 var dialogue_label: Label
@@ -170,6 +177,8 @@ func _build_ui() -> void:
     visual_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     visual_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
     visual_panel.add_child(visual_title)
+
+    _build_shan_sprite()
 
     invest_title = Label.new()
     invest_title.position = Vector2(26, 226)
@@ -291,6 +300,40 @@ func _build_ui() -> void:
     status_label.add_theme_color_override("font_color", Color("#91aaa2"))
     add_child(status_label)
 
+func _build_shan_sprite() -> void:
+    var sprite_frames := SpriteFrames.new()
+    sprite_frames.remove_animation("default")
+    for animation_name in SHAN_ANIMATION_FRAMES.keys():
+        sprite_frames.add_animation(animation_name)
+        sprite_frames.set_animation_speed(animation_name, 20.0)
+        sprite_frames.set_animation_loop(animation_name, animation_name == "idle")
+        var frame_count := int(SHAN_ANIMATION_FRAMES[animation_name])
+        for frame_index in range(1, frame_count + 1):
+            var path := "%s/%s/%03d.png" % [SHAN_SPRITE_ROOT, animation_name, frame_index]
+            var texture = load(path)
+            if texture is Texture2D:
+                sprite_frames.add_frame(animation_name, texture)
+            else:
+                push_warning("Missing Liu Kanshan animation frame: " + path)
+
+    shan_sprite = AnimatedSprite2D.new()
+    shan_sprite.sprite_frames = sprite_frames
+    shan_sprite.position = Vector2(610, 320)
+    shan_sprite.scale = Vector2(1.35, 1.35)
+    shan_sprite.animation_finished.connect(_on_shan_animation_finished)
+    shan_sprite.visible = false
+    visual_panel.add_child(shan_sprite)
+    _play_shan_animation("idle")
+
+func _play_shan_animation(animation_name: String) -> void:
+    if shan_sprite == null or not shan_sprite.sprite_frames.has_animation(animation_name):
+        return
+    shan_sprite.play(animation_name)
+
+func _on_shan_animation_finished() -> void:
+    if shan_sprite != null and shan_sprite.animation != "idle":
+        _play_shan_animation("idle")
+
 # ------------------------------------------------------------------- scenes
 
 func _enter_scene(scene_id: String) -> void:
@@ -339,6 +382,9 @@ func _render_scene(scene: Dictionary) -> void:
         return
     var resource_id := str(manifest.get("scene_visuals", {}).get(current_scene_id, scene.get("visual", "art_slot")))
     visual_title.text = "占位画面\n" + resource_id
+    shan_sprite.visible = current_scene_id not in ["s01_modern_article", "s02_baby_home"]
+    if shan_sprite.visible:
+        _play_shan_animation("idle")
     scene_label.text = str(scene.get("title", current_scene_id)) + "   ·   scene_id: " + current_scene_id
     year_label.text = str(scene.get("year", ""))
     _render_investigation(scene)
@@ -495,6 +541,7 @@ func ask_shan(prompt_id: String) -> String:
         push_warning("Unknown shan prompt: " + prompt_id)
         return "unknown"
     if int(runtime.get("shan_questions_left", 0)) <= 0:
+        _play_shan_animation("reminder")
         speaker_label.text = "刘看山"
         dialogue_label.text = str(shan.get("exhausted_text", "验证次数已用完。"))
         _update_status()
@@ -506,6 +553,7 @@ func ask_shan(prompt_id: String) -> String:
             break
     speaker_label.text = "刘看山"
     if not has_evidence:
+        _play_shan_animation("reminder")
         # Spec: insufficient answers still consume the question budget (only
         # the consume effect fires — no ask_*, no verify_*).
         _apply_effect("consume_shan_question")
@@ -513,6 +561,7 @@ func ask_shan(prompt_id: String) -> String:
         _render_shan(scenes_by_id.get(current_scene_id, {}))
         _update_status()
         return "insufficient"
+    _play_shan_animation("question")
     for effect in prompt.get("effects", []):
         _apply_effect(str(effect))
     var answer: Dictionary = prompt.get("answer", {})

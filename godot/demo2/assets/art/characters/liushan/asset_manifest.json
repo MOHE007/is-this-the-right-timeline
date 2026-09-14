@@ -1,0 +1,43 @@
+{
+  "character_id": "CHAR_LIUSHAN_WHITE",
+  "frame_size": [
+    160,
+    160
+  ],
+  "fps": 20,
+  "anchor": "bottom_center",
+  "states": {
+    "idle": {
+      "source_action": "待机",
+      "frame_count": 100,
+      "path": "assets/art/characters/liushan/idle/",
+      "first_frame": "001.png",
+      "last_frame": "100.png",
+      "sheet": "assets/art/characters/liushan/CHAR_LIUSHAN_WHITE_idle_sheet.png",
+      "loop": true
+    },
+    "question": {
+      "source_action": "电脑",
+      "frame_count": 120,
+      "path": "assets/art/characters/liushan/question/",
+      "first_frame": "001.png",
+      "last_frame": "120.png",
+      "sheet": "assets/art/characters/liushan/CHAR_LIUSHAN_WHITE_question_sheet.png",
+      "loop": false
+    },
+    "reminder": {
+      "source_action": "打招呼",
+      "frame_count": 80,
+      "path": "assets/art/characters/liushan/reminder/",
+      "first_frame": "001.png",
+      "last_frame": "080.png",
+      "sheet": "assets/art/characters/liushan/CHAR_LIUSHAN_WHITE_reminder_sheet.png",
+      "loop": false
+    }
+  },
+  "source_mapping": {
+    "idle": "liushan_source_04.gif",
+    "question": "liushan_source_03.gif",
+    "reminder": "liushan_source_06.gif"
+  }
+}

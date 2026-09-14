@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "id": "demo2_ch1_manifest",
-  "version": "v01",
+  "version": "v01.1",
   "title": "第一章南宋意难平｜资源清单",
   "runtime": "godot-4-web",
   "state": "demo2_ch1_state_v01.json",
@@ -91,7 +91,27 @@
       "AUD_SFX_SAVE_01",
       "AUD_SFX_LOAD_01"
     ],
-    "fallback_path": "assets/placeholders/README.md"
+    "fallback_path": "assets/placeholders/README.md",
+    "bindings": {
+      "CHAR_LIUSHAN_WHITE": {
+        "type": "animated_sprite_2d",
+        "root": "assets/art/characters/liushan",
+        "default_state": "idle",
+        "states": {
+          "idle": 100,
+          "question": 120,
+          "reminder": 80
+        },
+        "fps": 20,
+        "frame_size": [
+          160,
+          160
+        ],
+        "anchor": "bottom_center",
+        "status": "integrated",
+        "source_record": "assets/art/characters/liushan/SOURCE.md"
+      }
+    }
   },
   "scene_visuals": {
     "s01_modern_article": "BG_MODERN_ROOM_ARTICLE",
