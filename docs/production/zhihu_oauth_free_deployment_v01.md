@@ -50,10 +50,30 @@ node /Users/mac/.codex/skills/zhihu-hackathon/scripts/configure_callback.mjs \
 
 ## 尚待队长操作
 
-- 在 Render 或 Sealos 登录并创建免费服务。
-- 从知乎开放平台获取 Access Secret，并通过平台 Secret 注入；不要发到聊天或写入文件。
-- 将部署后的公网 `/auth/callback` 地址登记到知乎开放平台。
+- **Sealos「绑定手机号」**（收短信，DSH 无法代办）——其余部署步骤见下。
+- 从知乎开放平台登记回调地址。
 - 用户本人在部署后的页面点击最终授权确认。
+
+## Sealos 操作步骤（队长已定：改用 Sealos）
+
+> 2026-09-14 更新：Render 需 Stripe 卡片验证，已弃用；改走 Sealos。DSH 已用 GitHub 授权进入 Sealos 工作台（新加坡区，余额 ¥5），但被「绑定手机号」合规门槛拦下——此步必须队长本人收短信完成。绑好后按下面走，或通知 DSH 继续。
+
+1. 队长在 Sealos 完成「绑定手机号」（手机号 + 短信验证码）。新加坡区不强制实名。
+2. 进入「应用管理 → 新建应用」；来源选「镜像构建 / 从 Dockerfile」，指向本仓库 `zhihu-oauth/`（已提供 `Dockerfile`，Node 22、EXPOSE 4173、`npm start`）。
+3. 配置端口：容器端口 `4173`，开启公网访问，记下分配的 HTTPS 域名（形如 `https://xxx.cloud.sealos.io`）。
+4. 添加 Secret 环境变量（值在 macOS 钥匙串，不要写进文件/聊天）：
+   - `ZHIHU_OAUTH_APP_KEY` ← 钥匙串 `security find-generic-password -s "zhihu-hackathon:这真的是对的时间线吗:ca830503c8" -a oauth-app-key -w`
+   - `ZHIHU_ACCESS_SECRET` ← 钥匙串 `security find-generic-password -s zhihu-cli -a access-secret -w`
+5. 部署后得到公网地址，执行回调配置（把 `<公网域名>` 换成实际值）：
+
+```bash
+node /Users/mac/.codex/skills/zhihu-hackathon/scripts/configure_callback.mjs \
+  --project-dir /Users/mac/Downloads/比赛用/is-this-the-right-timeline/zhihu-oauth \
+  --redirect-uri https://<公网域名>/auth/callback
+```
+
+6. 把完全相同的 HTTPS 地址登记到知乎开放平台，重新部署。
+7. 公网 `/api/health` 返回 `{ok:true, oauthEnabled:true}` 即成功。
 
 ## 安全边界
 
