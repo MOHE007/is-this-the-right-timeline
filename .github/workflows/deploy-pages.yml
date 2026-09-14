@@ -1,4 +1,4 @@
-name: Deploy demo1 to GitHub Pages
+name: Deploy site to GitHub Pages
 
 on:
   push:
@@ -22,9 +22,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Assemble site
+        run: |
+          set -e
+          rm -rf _site && mkdir -p _site/cards
+          cp -R demo1/* _site/
+          cp -R cards/yuefei _site/cards/yuefei
+          cp -R cards/xinqiji _site/cards/xinqiji
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: demo1
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4

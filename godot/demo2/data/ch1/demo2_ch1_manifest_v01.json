@@ -136,12 +136,12 @@
       {
         "id": "card_yuefei",
         "label": "岳飞卡 · 可交互",
-        "url": "http://127.0.0.1:4174/"
+        "url": "https://mohe007.github.io/is-this-the-right-timeline/cards/yuefei/"
       },
       {
         "id": "card_xinqiji",
         "label": "辛弃疾卡 · 可交互",
-        "url": "http://127.0.0.1:4175/"
+        "url": "https://mohe007.github.io/is-this-the-right-timeline/cards/xinqiji/"
       }
     ],
     "credits": [

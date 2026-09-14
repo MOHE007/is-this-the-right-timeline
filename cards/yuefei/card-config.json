@@ -1,0 +1,33 @@
+{
+  "title": "岳飞",
+  "subtitle": "南宋 · 精忠报国",
+  "technique": "忠烈之魂",
+  "tagline": "山河未复，忠魂不灭",
+  "edition": "彩蛋 001 / 002",
+  "collection": "终局秘藏 · 宋魂篇",
+  "description": "完成游戏后解锁的隐藏典藏卡。",
+  "font": "/System/Library/Fonts/STHeiti Light.ttc",
+  "assets": {
+    "subject": "./assets/subject.png",
+    "background": "./assets/background.png",
+    "text": "./assets/text.png",
+    "lineart": "./assets/lineart.png",
+    "effects": "./assets/effects.png",
+    "model": "./assets/card.glb"
+  },
+  "parameters": {
+    "subjectScale": 1.25,
+    "subjectDepth": 0.42,
+    "backgroundDepth": -0.25,
+    "effectsScale": 1.05,
+    "effectsDepth": 0.58,
+    "foil": 0.72
+  },
+  "safeArea": {
+    "scale": 1.08,
+    "offset": [
+      -0.04,
+      -0.06
+    ]
+  }
+}
