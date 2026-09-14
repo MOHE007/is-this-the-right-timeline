@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: timeline-zhihu-oauth
+    runtime: node
+    rootDir: zhihu-oauth
+    buildCommand: npm ci
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: ZHIHU_OAUTH_APP_KEY
+        sync: false
+      - key: ZHIHU_ACCESS_SECRET
+        sync: false

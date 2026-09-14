@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "projectName": "这真的是对的时间线吗？",
+  "projectSlug": "这真的是对的时间线吗",
+  "oauth": {
+    "enabled": true,
+    "appId": "496",
+    "redirectUri": null,
+    "credentialService": "zhihu-hackathon:这真的是对的时间线吗:ca830503c8",
+    "credentialAccount": "oauth-app-key"
+  },
+  "host": "127.0.0.1",
+  "port": 4173
+}

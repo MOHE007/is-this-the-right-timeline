@@ -97,6 +97,10 @@ is-this-the-right-timeline/
 
 `godot/demo2/` 已建立最小 Godot 4.x 工程，加载 `data/ch1/` 的内容与状态 JSON，使用占位画面验证 14 个场景和选择推进。梁博森的最终美术通过 `resource_id` 接入 `godot/demo2/assets/art/`，不需要改剧情数据。Godot 4.3 实跑、三路线冒烟测试和截图已归档到 `godot/demo2/docs/run-2026-09-13/`。
 
+## 🔐 知乎 OAuth 登录服务
+
+`zhihu-oauth/` 是按官方 `zhihu-hackathon-skill_v2026s2` 初始化的独立 Node OAuth 服务。OAuth 后端优先使用 Render Free，Godot 游戏静态包继续使用 GitHub Pages。初始化、Secrets、回调和免费部署步骤见 [`docs/production/zhihu_oauth_free_deployment_v01.md`](docs/production/zhihu_oauth_free_deployment_v01.md)。
+
 ## 🗺 Roadmap
 
 | 里程碑 | 状态 | 交付物 |
