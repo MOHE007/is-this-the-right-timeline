@@ -61,13 +61,14 @@ var routes := {
 		},
 		"investigate": {
 			"s05_station": ["station_letter", "old_postman"],
-			"s06_ferry": ["migrant_witness"],
+			"s06_ferry": ["migrant_witness", "ferry_register"],
 			"s07_military_town": ["military_order"],
 		},
 		"shan": {
 			"s06_ferry": ["testimony_meaning"],
 		},
 		"expect_ending": "ending_truth",
+		"expect_not_investigated": {"s06_ferry": "ferry_register"},
 	},
 	"canonical_missed": {
 		"prefer": {
@@ -95,7 +96,7 @@ var routes := {
 		"investigate": {},
 		"shan": {
 			"s05_station": ["route_explain", "letter_chain"],
-			"s06_ferry": ["testimony_meaning"],
+			"s06_ferry": ["testimony_meaning", "route_explain"],
 			"s07_military_town": ["recall_chain"],
 		},
 		"expect_ending": "ending_canonical",
@@ -109,11 +110,60 @@ func _initialize() -> void:
 	for route_name in routes.keys():
 		if not await _run_route(route_name, routes[route_name]):
 			failures += 1
+	if not await _test_save_load():
+		failures += 1
 	if failures == 0:
-		print("SMOKE OK: %d/%d routes reached their expected endings" % [routes.size(), routes.size()])
+		print("SMOKE OK: %d/%d routes + save/load reached expectations" % [routes.size(), routes.size()])
 	else:
-		print("SMOKE FAILED: %d route(s) failed" % failures)
+		print("SMOKE FAILED: %d check(s) failed" % failures)
 	quit(failures)
+
+func _test_save_load() -> bool:
+	# H-save: drive to mid-game, save, load into a fresh instance, and expect
+	# the exact scene/beat cursor and runtime facts to survive the round trip.
+	var main = (load(MAIN_SCENE) as PackedScene).instantiate()
+	root.add_child(main)
+	await process_frame
+	var steps := 0
+	while main.current_scene_id != "s07_military_town" and steps < 60:
+		steps += 1
+		var scene: Dictionary = main.scenes_by_id.get(main.current_scene_id, {})
+		var beats: Array = scene.get("beats", [])
+		if main.current_beat_index >= beats.size():
+			break
+		var beat: Dictionary = beats[main.current_beat_index]
+		var choices: Array = beat.get("choices", [])
+		if choices.is_empty():
+			main._advance()
+		else:
+			var choice = _pick_choice(main, choices, "")
+			if choice == null:
+				break
+			main._choose(choice)
+	main.investigate("military_order")
+	var saved_scene: String = main.current_scene_id
+	var saved_beat: int = main.current_beat_index
+	var saved_trust := int(main.runtime.get("trust_military", 0))
+	var saved_clues: int = main.runtime.get("clues_found", []).size()
+	var save_ok: bool = main.save_game()
+	main.queue_free()
+	await process_frame
+
+	var restored = (load(MAIN_SCENE) as PackedScene).instantiate()
+	root.add_child(restored)
+	await process_frame
+	var load_ok: bool = restored.load_game()
+	var ok: bool = save_ok and load_ok
+	ok = ok and restored.current_scene_id == saved_scene
+	ok = ok and restored.current_beat_index == saved_beat
+	ok = ok and int(restored.runtime.get("trust_military", 0)) == saved_trust
+	ok = ok and restored.runtime.get("clues_found", []).size() == saved_clues
+	print("SAVE/LOAD: %s | scene=%s beat=%d trust=%d clues=%d" % ["OK" if ok else "FAILED", restored.current_scene_id, restored.current_beat_index, int(restored.runtime.get("trust_military", 0)), restored.runtime.get("clues_found", []).size()])
+	if not ok:
+		print("  expected scene=%s beat=%d trust=%d clues=%d (save_ok=%s load_ok=%s)" % [saved_scene, saved_beat, saved_trust, saved_clues, str(save_ok), str(load_ok)])
+	restored.queue_free()
+	await process_frame
+	return ok
 
 func _run_route(route_name: String, route: Dictionary) -> bool:
 	var main = (load(MAIN_SCENE) as PackedScene).instantiate()
@@ -185,6 +235,14 @@ func _run_route(route_name: String, route: Dictionary) -> bool:
 	if route.has("expect_shan_status") and str(route["expect_shan_status"]) not in shan_statuses:
 		ok = false
 		problems.append("expected a '%s' shan answer, statuses=%s" % [str(route["expect_shan_status"]), str(shan_statuses)])
+	if route.has("expect_not_investigated"):
+		var expectations: Dictionary = route["expect_not_investigated"]
+		for scene_key in expectations.keys():
+			var forbidden := str(expectations[scene_key])
+			var investigated: Dictionary = main.runtime.get("investigated_objects", {})
+			if forbidden in investigated.get(scene_key, []):
+				ok = false
+				problems.append("exclusive_group failed: %s was investigated in %s" % [forbidden, scene_key])
 	print("ROUTE %s: %s | ending=%s expected=%s | steps=%d%s" % [route_name, "OK" if ok else "FAILED", ending, expected, steps, " | fallback" if used_fallback else ""])
 	print("  trail: %s" % " -> ".join(PackedStringArray(trail)))
 	print("  state: clues=%d verified=%d fragments=%d missed=%d inquiries=%d trust=%d shan_left=%d branch=%s" % [

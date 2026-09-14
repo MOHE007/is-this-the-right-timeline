@@ -20,4 +20,5 @@ renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.055, 0.07, 0.08, 1)
 
 [gui]
+theme/custom_font="res://assets/fonts/NotoSansSC-Regular.otf"
 theme/default_font_multichannel_signed_distance_field=true

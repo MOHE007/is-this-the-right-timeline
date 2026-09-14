@@ -17,6 +17,7 @@ const STATE_PATH := "res://data/ch1/demo2_ch1_state_v01.json"
 const STATE_PATCH_PATH := "res://data/ch1/demo2_ch1_state_v02.json"
 const MANIFEST_PATH := "res://data/ch1/demo2_ch1_manifest_v01.json"
 const SHAN_PATH := "res://data/ch1/demo2_ch1_shan_answers_v02.json"
+const SAVE_PATH := "user://demo2_ch1_save_v02.json"
 
 const CLUE_NAMES := {
     "family_letter": "家书",
@@ -48,6 +49,7 @@ const CONDITION_LABELS := {
 
 var content: Dictionary = {}
 var contract: Dictionary = {}
+var state_patch: Dictionary = {}
 var manifest: Dictionary = {}
 var shan: Dictionary = {}
 var effects_catalog: Dictionary = {}
@@ -59,6 +61,9 @@ var current_beat_index := 0
 var waiting_for_choice := false
 # Runtime-provided ordinary-closure bridge; exposed for smoke tests.
 var fallback_choice: Dictionary = {}
+# Loading a save re-renders beats; their effects were already applied when the
+# save was taken, so they must not fire again (e.g. s07 trust increment).
+var suppress_beat_effects := false
 
 var title_label: Label
 var year_label: Label
@@ -77,6 +82,8 @@ var choices_box: VBoxContainer
 var status_label: Label
 var clue_label: Label
 var choice_hint_label: Label
+var save_button: Button
+var load_button: Button
 
 func _ready() -> void:
     _load_contracts()
@@ -91,12 +98,13 @@ func _load_contracts() -> void:
     manifest = _read_json(MANIFEST_PATH)
     shan = _read_json(SHAN_PATH)
 
-    var state_patch := _read_json(STATE_PATCH_PATH)
+    state_patch = _read_json(STATE_PATCH_PATH)
     var initial: Dictionary = contract.get("initial_state", {}).duplicate(true)
     initial.merge(state_patch.get("initial_state_patch", {}), true)
     runtime = initial.duplicate(true)
     runtime["investigated_objects"] = {}
     runtime["shan_answered"] = []
+    runtime["locked_groups"] = {}
 
     effects_catalog = contract.get("effects_catalog", {}).duplicate(true)
     effects_catalog.merge(state_patch.get("effects_catalog_patch", {}), true)
@@ -204,6 +212,21 @@ func _build_ui() -> void:
     year_label.add_theme_color_override("font_color", Color("#c78b6b"))
     add_child(year_label)
 
+    save_button = Button.new()
+    save_button.text = "存档"
+    save_button.position = Vector2(830, 8)
+    save_button.size = Vector2(90, 26)
+    save_button.pressed.connect(_on_save_pressed)
+    add_child(save_button)
+
+    load_button = Button.new()
+    load_button.text = "读档"
+    load_button.position = Vector2(928, 8)
+    load_button.size = Vector2(90, 26)
+    load_button.disabled = not FileAccess.file_exists(SAVE_PATH)
+    load_button.pressed.connect(_on_load_pressed)
+    add_child(load_button)
+
     scene_label = Label.new()
     scene_label.position = Vector2(62, 548)
     scene_label.size = Vector2(900, 24)
@@ -284,19 +307,26 @@ func _enter_scene(scene_id: String) -> void:
     _render_scene(scene)
 
 func _apply_leave_effects(scene_id: String) -> void:
-    # "remember_missed_clue:family_letter" fires only when the clue was
-    # actually missed, and surfaces the scene's fallback_feedback.
+    # v0.2.1 format: {"effect": "remember_missed_clue_if_absent", "clue_id": X}
+    # whose guard lives in the effects catalog. Legacy "effect:param" strings
+    # keep the runtime-side missed check for compatibility.
     var scene: Dictionary = scenes_by_id.get(scene_id, {})
     var investigation: Dictionary = scene.get("investigation", {}) if scene.get("investigation") is Dictionary else {}
     var missed_any := false
     for raw in investigation.get("leave_effects", []):
-        var parts := str(raw).split(":", true, 1)
-        if parts[0] == "remember_missed_clue" and parts.size() == 2:
-            if not _has_evidence(parts[1]):
-                _apply_effect(raw)
+        if raw is Dictionary:
+            var name := str(raw.get("effect", ""))
+            var param := str(raw.get("clue_id", raw.get("param", "")))
+            if _apply_effect_named(name, param):
                 missed_any = true
         else:
-            _apply_effect(str(raw))
+            var parts := str(raw).split(":", true, 1)
+            if parts[0] == "remember_missed_clue" and parts.size() == 2:
+                if not _has_evidence(parts[1]):
+                    _apply_effect(str(raw))
+                    missed_any = true
+            else:
+                _apply_effect(str(raw))
     if missed_any:
         var feedback := str(scene.get("fallback_feedback", ""))
         if not feedback.is_empty():
@@ -325,13 +355,26 @@ func _render_investigation(scene: Dictionary) -> void:
     for object in objects:
         var object_id := str(object.get("id", ""))
         var done := _is_investigated(current_scene_id, object_id)
+        var group_locked := _group_locked(object) and not done
         var button := Button.new()
-        button.text = ("✓ " if done else "◻ ") + str(object.get("label", object_id))
+        var prefix := "✓ " if done else ("✕ " if group_locked else "◻ ")
+        button.text = prefix + str(object.get("label", object_id))
         button.custom_minimum_size = Vector2(380, 38)
-        button.disabled = done and bool(object.get("once", true))
+        button.disabled = (done and bool(object.get("once", true))) or group_locked
+        if group_locked:
+            button.tooltip_text = "你已在此处做出取舍，机会不再。"
         button.alignment = HORIZONTAL_ALIGNMENT_LEFT
         button.pressed.connect(_on_investigate_pressed.bind(object_id))
         invest_box.add_child(button)
+
+func _group_locked(object: Dictionary) -> bool:
+    # v0.2.1 exclusive_group: picking one object in the group forfeits the
+    # others in the same scene (s06 testimony vs ferry register trade-off).
+    var group := str(object.get("exclusive_group", ""))
+    if group.is_empty():
+        return false
+    var locked: Dictionary = runtime.get("locked_groups", {})
+    return group in locked.get(current_scene_id, [])
 
 func _on_investigate_pressed(object_id: String) -> void:
     investigate(object_id)
@@ -345,6 +388,9 @@ func investigate(object_id: String) -> bool:
             continue
         if _is_investigated(current_scene_id, object_id) and bool(object.get("once", true)):
             return false
+        if _group_locked(object) and not _is_investigated(current_scene_id, object_id):
+            choice_hint_label.text = "你已在此处做出取舍，这个机会不再。"
+            return false
         for effect in object.get("effects", []):
             _apply_effect(str(effect))
         var investigated: Dictionary = runtime.get("investigated_objects", {})
@@ -353,6 +399,14 @@ func investigate(object_id: String) -> bool:
             list.append(object_id)
         investigated[current_scene_id] = list
         runtime["investigated_objects"] = investigated
+        var group := str(object.get("exclusive_group", ""))
+        if not group.is_empty():
+            var locked: Dictionary = runtime.get("locked_groups", {})
+            var groups: Array = locked.get(current_scene_id, [])
+            if group not in groups:
+                groups.append(group)
+            locked[current_scene_id] = groups
+            runtime["locked_groups"] = locked
         var counts: Dictionary = runtime.get("investigation_counts", {})
         counts[current_scene_id] = int(counts.get(current_scene_id, 0)) + 1
         runtime["investigation_counts"] = counts
@@ -372,32 +426,71 @@ func _is_investigated(scene_id: String, object_id: String) -> bool:
 
 func _render_shan(scene: Dictionary) -> void:
     _clear_children(shan_box)
-    var prompt_ids: Array = scene.get("shan_prompts", [])
-    if prompt_ids.is_empty():
+    var prompts := _scene_prompts(scene)
+    if prompts.is_empty():
         shan_title.text = ""
         return
     shan_title.text = "刘看山 · 剩 %d 次验证" % int(runtime.get("shan_questions_left", 0))
-    var prompts: Dictionary = shan.get("prompts", {})
-    for prompt_id in prompt_ids:
-        var prompt: Dictionary = prompts.get(str(prompt_id), {})
-        if prompt.is_empty():
-            push_warning("Unknown shan prompt: " + str(prompt_id))
-            continue
-        var answered: bool = str(prompt_id) in runtime.get("shan_answered", [])
+    for prompt in prompts:
+        var prompt_id := str(prompt.get("id", ""))
+        var answered: bool = prompt_id in runtime.get("shan_answered", [])
         var button := Button.new()
         button.text = ("✓ " if answered else "？ ") + str(prompt.get("label", prompt_id))
         button.custom_minimum_size = Vector2(360, 38)
         button.alignment = HORIZONTAL_ALIGNMENT_LEFT
         button.disabled = answered
-        button.pressed.connect(_on_shan_pressed.bind(str(prompt_id)))
+        button.pressed.connect(_on_shan_pressed.bind(prompt_id))
         shan_box.add_child(button)
+
+func _scene_prompts(scene: Dictionary) -> Array:
+    # v0.2.1 content carries prompt OBJECTS {id, requires, effects}; the
+    # answers library contributes label/answer/insufficient text. Legacy
+    # string ids fall back to the library plus state prompt_effects.
+    var out: Array = []
+    var library: Dictionary = shan.get("prompts", {})
+    var state_bindings: Dictionary = state_patch.get("prompt_effects", {})
+    for raw in scene.get("shan_prompts", []):
+        var prompt := {}
+        var prompt_id := ""
+        if raw is Dictionary:
+            prompt_id = str(raw.get("id", ""))
+            # Prompt requirements are explicitly OR semantics in the v0.2.2
+            # content contract. Keep the legacy `requires` spelling as a
+            # compatibility fallback for the other prompts.
+            prompt["requires"] = raw.get("requires_any", raw.get("requires", []))
+            prompt["effects"] = raw.get("effects", [])
+        else:
+            prompt_id = str(raw)
+            prompt["requires"] = []
+            prompt["effects"] = []
+        var lib: Dictionary = library.get(prompt_id, {})
+        var binding: Dictionary = state_bindings.get(prompt_id, {})
+        if (prompt["requires"] as Array).is_empty():
+            var fallback_requires = binding.get("requires", binding.get("requires_any", lib.get("requires_any", [])))
+            prompt["requires"] = fallback_requires if fallback_requires is Array else []
+        if (prompt["effects"] as Array).is_empty():
+            var fallback_effects = lib.get("effects", [])
+            prompt["effects"] = fallback_effects if fallback_effects is Array else []
+        if lib.is_empty() and (prompt["effects"] as Array).is_empty():
+            push_warning("Unknown shan prompt: " + prompt_id)
+            continue
+        prompt["id"] = prompt_id
+        prompt["label"] = str(lib.get("label", prompt_id))
+        prompt["answer"] = lib.get("answer", {})
+        prompt["insufficient_text"] = str(lib.get("insufficient_text", "信息不足。先把东西找到，再来问我。"))
+        out.append(prompt)
+    return out
 
 func _on_shan_pressed(prompt_id: String) -> void:
     ask_shan(prompt_id)
 
 func ask_shan(prompt_id: String) -> String:
     # Public for smoke tests. Returns answered | insufficient | exhausted.
-    var prompt: Dictionary = shan.get("prompts", {}).get(prompt_id, {})
+    var prompt := {}
+    for candidate in _scene_prompts(scenes_by_id.get(current_scene_id, {})):
+        if str(candidate.get("id", "")) == prompt_id:
+            prompt = candidate
+            break
     if prompt.is_empty():
         push_warning("Unknown shan prompt: " + prompt_id)
         return "unknown"
@@ -407,15 +500,16 @@ func ask_shan(prompt_id: String) -> String:
         _update_status()
         return "exhausted"
     var has_evidence := false
-    for requirement in prompt.get("requires_any", []):
+    for requirement in prompt.get("requires", []):
         if _has_evidence(str(requirement)):
             has_evidence = true
             break
     speaker_label.text = "刘看山"
     if not has_evidence:
-        # Spec: insufficient answers still consume the question budget.
+        # Spec: insufficient answers still consume the question budget (only
+        # the consume effect fires — no ask_*, no verify_*).
         _apply_effect("consume_shan_question")
-        dialogue_label.text = str(prompt.get("insufficient_text", "信息不足。先把东西找到，再来问我。"))
+        dialogue_label.text = str(prompt.get("insufficient_text", ""))
         _render_shan(scenes_by_id.get(current_scene_id, {}))
         _update_status()
         return "insufficient"
@@ -443,8 +537,9 @@ func _has_evidence(id: String) -> bool:
 func _show_beat(beat: Dictionary) -> void:
     waiting_for_choice = false
     fallback_choice = {}
-    for effect in beat.get("effects", []):
-        _apply_effect(str(effect))
+    if not suppress_beat_effects:
+        for effect in beat.get("effects", []):
+            _apply_effect(str(effect))
     speaker_label.text = str(beat.get("speaker", "旁白"))
     dialogue_label.text = str(beat.get("text", ""))
     continue_button.visible = true
@@ -494,12 +589,14 @@ func _offer_fallback_route(choices: Array) -> void:
         dialogue_label.text += "\n\n（当前条件未满足，请检查线索或状态。）"
         return
     dialogue_label.text += "\n\n你交出了自己知道的一切，但预警没有一条能可靠抵达的链。历史沿着原来的方向走。"
+    # v0.2.1 contract declares the fallback ending explicitly.
+    var fallback_ending := str(state_patch.get("fallback", {}).get("ending", "ending_canonical"))
     var button := Button.new()
     button.text = "接受未能改写的结局"
     button.custom_minimum_size = Vector2(320, 42)
     var fallback := {
         "label": "接受未能改写的结局",
-        "effects": ["fail_delivery", "set_ending_canonical"],
+        "effects": ["fail_delivery", "set_" + fallback_ending],
         "next_scene_id": next_id,
     }
     fallback_choice = fallback
@@ -674,16 +771,20 @@ func _condition_expression(expression: Dictionary) -> bool:
 func _apply_effect(effect_string: String) -> void:
     # Supports "name" and "name:param" ($-placeholders take the param).
     var parts := effect_string.split(":", true, 1)
-    var name := parts[0]
-    var param := parts[1] if parts.size() > 1 else ""
+    _apply_effect_named(parts[0], parts[1] if parts.size() > 1 else "")
+
+func _apply_effect_named(name: String, param: String) -> bool:
+    # Returns true when the effect actually applied (guards may skip it).
     if name == "resolve_intervention_branch" and str(runtime.get("branch", "")) != "intervene":
         # Contract writes branch=intervene unconditionally, which would
         # overwrite the witness branch and dead-end s11. Pending contract v03.
-        return
+        return false
     var entry = effects_catalog.get(name)
     if entry == null:
-        push_warning("Unknown effect ignored: " + effect_string)
-        return
+        push_warning("Unknown effect ignored: " + name)
+        return false
+    if entry.has("guard") and not _guard_passes(entry["guard"], param):
+        return false
     if entry.has("set"):
         for key in entry["set"].keys():
             runtime[key] = _substitute(entry["set"][key], param)
@@ -702,10 +803,38 @@ func _apply_effect(effect_string: String) -> void:
             if value not in list:
                 list.append(value)
             runtime[key] = list
-    # v01 catalog hardcodes evidence_completeness per clue (1/2/3/4), which is
-    # order-dependent; recompute from the actual clue count. Flagged to Codex.
+    # field_mapping: evidence_completeness is derived from the four canonical
+    # physical clues actually held (v0.2.1 formula).
     if entry.has("append_unique") and entry["append_unique"].has("clues_found"):
-        runtime["evidence_completeness"] = runtime.get("clues_found", []).size()
+        var count := 0
+        for clue_id in CLUE_NAMES.keys():
+            if clue_id in runtime.get("clues_found", []):
+                count += 1
+        runtime["evidence_completeness"] = count
+    return true
+
+func _guard_passes(guard: Dictionary, param: String) -> bool:
+    if guard.has("not_contains"):
+        var pair = guard["not_contains"]
+        if pair is Array and pair.size() == 2:
+            var list = runtime.get(str(pair[0]), [])
+            var value = _substitute(pair[1], param)
+            if list is Array and value in list:
+                return false
+            # Contract gap (reported as D2): recall_recipient_token is a
+            # boolean flag and never enters clues_found, so the raw guard
+            # would mark it missed even when held. Honor the intent via the
+            # wider evidence check.
+            if str(pair[0]) == "clues_found" and _has_evidence(str(value)):
+                return false
+            return true
+    if guard.has("contains"):
+        var pair = guard["contains"]
+        if pair is Array and pair.size() == 2:
+            var list = runtime.get(str(pair[0]), [])
+            var value = _substitute(pair[1], param)
+            return list is Array and value in list
+    return true
 
 func _substitute(value, param: String):
     if value is String and value.begins_with("$"):
@@ -787,3 +916,61 @@ func _finish(message: String) -> void:
         missed_line = "\n错过的关键线索：" + "、".join(names)
     dialogue_label.text = message + missed_line + "\n\nDemo2 探索版占位运行时；美术资源将通过 resource_id 接入。"
     _update_status()
+
+# -------------------------------------------------------------- save points
+
+func _on_save_pressed() -> void:
+    if save_game():
+        choice_hint_label.text = "已存档：%s · beat %d" % [current_scene_id, current_beat_index]
+        load_button.disabled = false
+
+func _on_load_pressed() -> void:
+    if load_game():
+        choice_hint_label.text = "已读档：%s · beat %d" % [current_scene_id, current_beat_index]
+
+func save_game() -> bool:
+    # Public for smoke tests. Persists the full runtime state dictionary plus
+    # the exact scene/beat cursor; only plain JSON crosses the boundary.
+    var payload := {
+        "schema_version": "1.0",
+        "save_id": "demo2_ch1_v02",
+        "timestamp": Time.get_datetime_string_from_system(),
+        "current_scene_id": current_scene_id,
+        "current_beat_index": current_beat_index,
+        "runtime": runtime,
+    }
+    var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+    if file == null:
+        push_error("Cannot write save file: " + SAVE_PATH)
+        return false
+    file.store_string(JSON.stringify(payload, "  "))
+    return true
+
+func load_game() -> bool:
+    # Public for smoke tests. Restores runtime and re-renders the saved beat.
+    var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+    if file == null:
+        push_warning("No save file: " + SAVE_PATH)
+        return false
+    var parsed = JSON.parse_string(file.get_as_text())
+    if not (parsed is Dictionary) or not (parsed.get("runtime") is Dictionary):
+        push_error("Corrupt save file: " + SAVE_PATH)
+        return false
+    var scene_id := str(parsed.get("current_scene_id", ""))
+    if not scenes_by_id.has(scene_id):
+        push_error("Save references unknown scene: " + scene_id)
+        return false
+    runtime = (parsed["runtime"] as Dictionary).duplicate(true)
+    current_scene_id = scene_id
+    current_beat_index = 0
+    # Beat effects already applied before the save; do not fire them again.
+    suppress_beat_effects = true
+    var scene: Dictionary = scenes_by_id[scene_id]
+    _render_scene(scene)
+    var beats: Array = scene.get("beats", [])
+    var saved_beat := int(parsed.get("current_beat_index", 0))
+    if saved_beat > 0 and saved_beat < beats.size():
+        current_beat_index = saved_beat
+        _show_beat(beats[saved_beat])
+    suppress_beat_effects = false
+    return true

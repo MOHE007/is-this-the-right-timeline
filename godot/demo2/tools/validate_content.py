@@ -63,10 +63,17 @@ def main() -> int:
             seen_object_ids.add(object_id)
             referenced_effects.update(e.split(":", 1)[0] for e in obj.get("effects", []))
             investigation_objects += 1
-        referenced_effects.update(e.split(":", 1)[0] for e in investigation.get("leave_effects", []))
-        for prompt_id in scene.get("shan_prompts", []):
+        for raw in investigation.get("leave_effects", []):
+            if isinstance(raw, dict):
+                referenced_effects.add(str(raw.get("effect", "")).split(":", 1)[0])
+            else:
+                referenced_effects.add(str(raw).split(":", 1)[0])
+        for prompt in scene.get("shan_prompts", []):
+            prompt_id = prompt.get("id") if isinstance(prompt, dict) else prompt
             if prompt_id not in shan_prompts:
                 errors.append(f"{scene.get('id')}: unknown shan prompt {prompt_id}")
+            if isinstance(prompt, dict):
+                referenced_effects.update(e.split(":", 1)[0] for e in prompt.get("effects", []))
         for beat in scene.get("beats", []):
             referenced_effects.update(e.split(":", 1)[0] for e in beat.get("effects", []))
             for choice in beat.get("choices", []):
@@ -95,6 +102,19 @@ def main() -> int:
             if isinstance(item, str) and item not in conditions:
                 errors.append(f"condition {name}: unknown sub-condition {item}")
 
+    # nodes_patch health: ids should be real scenes; named entry conditions
+    # must exist (undefined markers cannot be enforced by the runtime).
+    warnings: list[str] = []
+    for node in state_patch.get("nodes_patch", []):
+        node_id = node.get("id", "")
+        if node_id not in scene_ids:
+            warnings.append(f"nodes_patch id {node_id!r} does not match any scene id")
+        entry = node.get("entry_conditions", {})
+        for key in ("all", "any"):
+            for item in entry.get(key, []) if isinstance(entry, dict) else []:
+                if isinstance(item, str) and item not in conditions:
+                    warnings.append(f"nodes_patch {node_id}: undefined condition name {item!r}")
+
     missing_scenes = referenced_scenes - scene_ids
     missing_conditions = referenced_conditions - conditions
     missing_effects = referenced_effects - effects
@@ -114,6 +134,8 @@ def main() -> int:
             print(f"ERROR: {error}")
         return 1
 
+    for warning in warnings:
+        print(f"WARN: {warning}")
     print(f"OK: {len(scene_ids)} scenes, {len(referenced_effects)} effects, {len(referenced_conditions)} conditions")
     print(f"OK: v02 merge — {investigation_objects} investigation objects, {len(shan_prompts)} shan prompts")
     print("OK: art slot metadata present for every scene")
