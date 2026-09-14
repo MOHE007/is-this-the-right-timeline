@@ -24,6 +24,9 @@ function runCurl(lines) {
     const stderr = [];
     child.stdout.on('data', (chunk) => stdout.push(chunk));
     child.stderr.on('data', (chunk) => stderr.push(chunk));
+    // Missing curl (e.g. a bare Node image) must reject, not crash the
+    // process with an uncaught ENOENT.
+    child.on('error', (error) => reject(new Error(`无法启动 curl：${error.message}`)));
     child.on('close', (code) => {
       if (code !== 0) return reject(new Error(Buffer.concat(stderr).toString('utf8').trim() || '网络请求失败'));
       try { resolve(JSON.parse(Buffer.concat(stdout).toString('utf8'))); }
