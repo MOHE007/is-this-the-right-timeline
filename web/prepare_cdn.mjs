@@ -1,23 +1,27 @@
 #!/usr/bin/env node
-// Turn the Godot web export into a CDN-friendly bundle.
+// Turn the Godot web export into a bundle that loads its heavy assets from
+// jsDelivr's fast Cloudflare line, while the tiny HTML itself stays on an
+// ordinary host.
 //
-// jsDelivr (Cloudflare) is 15-30x faster than GitHub Pages from mainland
-// China, but it rejects files over 20MB — and Godot's index.wasm is ~35MB.
-// So: split the wasm into <20MB parts and inject a fetch interceptor that
-// reassembles it before the engine sees it. The same bundle still works on
-// any ordinary host (parts load same-origin).
+// Why: from mainland China, GitHub Pages and Sealos(SG) measure ~30KB/s while
+// jsDelivr measures 455KB/s-1.4MB/s. jsDelivr refuses to serve .html as a page
+// (it returns text/plain), so the page is hosted normally and a <base> tag
+// points every relative asset at jsDelivr. jsDelivr also caps files at 20MB
+// and packages at 50MB, so the 33.7MB wasm is split and reassembled by an
+// injected fetch shim.
 //
-// Usage: node web/prepare_cdn.mjs <export-dir> <out-dir>
+// Usage: node web/prepare_cdn.mjs <export-dir> <out-dir> [cdn-base-url]
 import { readFile, writeFile, mkdir, rm, readdir, copyFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
 const PART_LIMIT = 19 * 1024 * 1024; // stay safely under jsDelivr's 20MB cap
-const [exportDir, outDir] = process.argv.slice(2);
+const [exportDir, outDir, cdnBaseArg] = process.argv.slice(2);
 if (!exportDir || !outDir) {
-  console.error("Usage: node web/prepare_cdn.mjs <export-dir> <out-dir>");
+  console.error("Usage: node web/prepare_cdn.mjs <export-dir> <out-dir> [cdn-base-url]");
   process.exit(1);
 }
+const cdnBase = (cdnBaseArg || "").replace(/\/?$/, "/");
 
 const wasmPath = path.join(exportDir, "index.wasm");
 if (!existsSync(wasmPath)) {
@@ -79,8 +83,14 @@ if (!html.includes(anchor)) {
   console.error("Could not find the loader script tag in index.html");
   process.exit(1);
 }
-await writeFile(htmlPath, html.replace(anchor, `${interceptor}\t\t${anchor}`));
+// Point every relative asset (index.js, index.pck, wasm parts, icons) at the
+// CDN. Without a CDN base the bundle stays self-contained on one host.
+const baseTag = cdnBase
+  ? `<base href="${cdnBase}">\n\t\t`
+  : "";
+await writeFile(htmlPath, html.replace(anchor, `${interceptor}\t\t${baseTag}${anchor}`));
 
 const mb = (n) => `${(n / 1024 / 1024).toFixed(1)}MB`;
 console.log(`wasm ${mb(wasm.length)} -> ${partCount} parts (limit ${mb(PART_LIMIT)})`);
+console.log(cdnBase ? `assets resolve against ${cdnBase}` : "self-contained bundle (no CDN base)");
 console.log(`bundle written to ${outDir}`);
