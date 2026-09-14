@@ -21,9 +21,12 @@ const SAVE_PATH := "user://demo2_ch1_save_v02.json"
 const SHAN_SPRITE_ROOT := "res://assets/art/characters/liushan"
 # Scenes where Liu Kanshan's sprite stays hidden (pre-awakening prologue).
 const LIUSHAN_HIDDEN_SCENES := ["s01_modern_article", "s02_baby_home"]
-# UI_INK_DIALOGUE_FRAME is 1600x360; ink border slice for the dialogue panel.
-const DIALOGUE_SLICE := 110.0
-const DIALOGUE_SLICE_Y := 80.0
+# UI_INK_DIALOGUE_FRAME is 1600x360 light rice-paper art: slice the ink border
+# for the frame edge, but keep CONTENT margins small so text is not pushed out.
+const DIALOGUE_SLICE := 70.0
+const DIALOGUE_SLICE_Y := 44.0
+const DIALOGUE_PAD_X := 40.0
+const DIALOGUE_PAD_Y := 20.0
 const SHAN_ANIMATION_FRAMES := {
     "idle": 100,
     "question": 120,
@@ -181,7 +184,6 @@ func _load_asset(resource_id: String):
     return load(path)
 
 func _apply_dialogue_frame() -> void:
-    # UI_INK_DIALOGUE_FRAME is 1600x360; slice the ink border so it scales.
     var texture = _load_asset(str(manifest.get("assets", {}).get("ui_bindings", {}).get("dialogue_frame", "UI_INK_DIALOGUE_FRAME")))
     if texture == null:
         return
@@ -192,6 +194,12 @@ func _apply_dialogue_frame() -> void:
     style.texture_margin_right = DIALOGUE_SLICE
     style.texture_margin_top = DIALOGUE_SLICE_Y
     style.texture_margin_bottom = DIALOGUE_SLICE_Y
+    # Content margins must be explicit: they default to the texture margins,
+    # which would shove the text far right and squeeze it out of a short panel.
+    style.content_margin_left = DIALOGUE_PAD_X
+    style.content_margin_right = DIALOGUE_PAD_X
+    style.content_margin_top = DIALOGUE_PAD_Y
+    style.content_margin_bottom = DIALOGUE_PAD_Y
     dialogue_panel.add_theme_stylebox_override("panel", style)
 
 func _apply_scene_art() -> void:
@@ -330,32 +338,35 @@ func _build_ui() -> void:
     add_child(load_button)
 
     scene_label = Label.new()
-    scene_label.position = Vector2(62, 548)
-    scene_label.size = Vector2(900, 24)
+    scene_label.position = Vector2(62, 546)
+    scene_label.size = Vector2(900, 20)
     scene_label.add_theme_font_size_override("font_size", 16)
     scene_label.add_theme_color_override("font_color", Color("#b9c7c1"))
     add_child(scene_label)
 
     dialogue_panel = PanelContainer.new()
-    dialogue_panel.position = Vector2(40, 574)
-    dialogue_panel.size = Vector2(820, 116)
+    dialogue_panel.position = Vector2(40, 568)
+    dialogue_panel.size = Vector2(820, 130)
     _apply_dialogue_frame()
     add_child(dialogue_panel)
+    # The 9-slice frame already carries its own ink padding, so this margin
+    # container stays slim.
     var dialogue_margin := MarginContainer.new()
-    dialogue_margin.add_theme_constant_override("margin_left", 18)
-    dialogue_margin.add_theme_constant_override("margin_right", 18)
-    dialogue_margin.add_theme_constant_override("margin_top", 10)
-    dialogue_margin.add_theme_constant_override("margin_bottom", 10)
+    dialogue_margin.add_theme_constant_override("margin_left", 8)
+    dialogue_margin.add_theme_constant_override("margin_right", 8)
+    dialogue_margin.add_theme_constant_override("margin_top", 4)
+    dialogue_margin.add_theme_constant_override("margin_bottom", 4)
     dialogue_panel.add_child(dialogue_margin)
     var dialogue_box := VBoxContainer.new()
     dialogue_margin.add_child(dialogue_box)
     speaker_label = Label.new()
-    speaker_label.add_theme_color_override("font_color", Color("#d5a16b"))
+    # Dark ink text: the dialogue frame is light rice paper.
+    speaker_label.add_theme_color_override("font_color", Color("#8a3a26"))
     dialogue_box.add_child(speaker_label)
     dialogue_label = Label.new()
     dialogue_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     dialogue_label.add_theme_font_size_override("font_size", 16)
-    dialogue_label.add_theme_color_override("font_color", Color("#edf0e9"))
+    dialogue_label.add_theme_color_override("font_color", Color("#2b2a27"))
     dialogue_box.add_child(dialogue_label)
 
     continue_button = Button.new()
@@ -380,14 +391,14 @@ func _build_ui() -> void:
     add_child(choice_hint_label)
 
     clue_label = Label.new()
-    clue_label.position = Vector2(62, 695)
+    clue_label.position = Vector2(62, 700)
     clue_label.size = Vector2(800, 20)
     clue_label.add_theme_font_size_override("font_size", 13)
     clue_label.add_theme_color_override("font_color", Color("#91aaa2"))
     add_child(clue_label)
 
     status_label = Label.new()
-    status_label.position = Vector2(880, 695)
+    status_label.position = Vector2(880, 700)
     status_label.size = Vector2(340, 20)
     status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
     status_label.add_theme_font_size_override("font_size", 13)
