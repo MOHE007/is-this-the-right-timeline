@@ -1,0 +1,15 @@
+
+s01_modern_article     bgm=none                             amb=none
+s02_baby_home          bgm=none                             amb=AUD_AMB_INDOOR_PAPER_01_v01.ogg
+s03_baby_liushanshan   bgm=none                             amb=AUD_AMB_INDOOR_PAPER_01_v01.ogg
+s04_growth_1127        bgm=AUD_BGM_INK_MAIN_01_v01.ogg      amb=AUD_AMB_INDOOR_PAPER_01_v01.ogg
+s05_station            bgm=AUD_BGM_INK_MAIN_01_v01.ogg      amb=AUD_AMB_INDOOR_PAPER_01_v01.ogg
+s06_ferry              bgm=AUD_BGM_INK_MAIN_01_v01.ogg      amb=AUD_AMB_FERRY_MIST_01_v01.ogg
+s07_military_town      bgm=AUD_BGM_INK_MAIN_01_v01.ogg      amb=AUD_AMB_MILITARY_TOWN_01_v01.ogg
+s08_yuefei_countdown   bgm=AUD_BGM_RECALL_TENSION_01_v01.ogg amb=AUD_AMB_MILITARY_TOWN_01_v01.ogg
+s09_recall_chain       bgm=AUD_BGM_RECALL_TENSION_01_v01.ogg amb=AUD_AMB_MILITARY_TOWN_01_v01.ogg
+s10_intervention       bgm=AUD_BGM_RECALL_TENSION_01_v01.ogg amb=AUD_AMB_MILITARY_TOWN_01_v01.ogg
+s11_outcome_router     bgm=AUD_BGM_ENDING_QUIET_01_v01.ogg  amb=AUD_AMB_MILITARY_TOWN_01_v01.ogg
+s12_leave_or_continue  bgm=AUD_BGM_ENDING_QUIET_01_v01.ogg  amb=AUD_AMB_MILITARY_TOWN_01_v01.ogg
+s13_exit_chapter       bgm=AUD_BGM_ENDING_QUIET_01_v01.ogg  amb=AUD_AMB_MILITARY_TOWN_01_v01.ogg
+SFX cues loaded: 10/10

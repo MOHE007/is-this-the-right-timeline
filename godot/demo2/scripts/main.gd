@@ -101,10 +101,17 @@ var clue_label: Label
 var choice_hint_label: Label
 var save_button: Button
 var load_button: Button
+var bgm_player: AudioStreamPlayer
+var ambience_player: AudioStreamPlayer
+var sfx_players: Array[AudioStreamPlayer] = []
+var sfx_cursor := 0
+var current_bgm := ""
+var current_ambience := ""
 
 func _ready() -> void:
     _load_contracts()
     _build_ui()
+    _build_audio()
     _enter_scene(current_scene_id)
 
 # ---------------------------------------------------------------- contracts
@@ -486,6 +493,7 @@ func _render_scene(scene: Dictionary) -> void:
         _finish("场景没有内容：" + current_scene_id)
         return
     _apply_scene_art()
+    _apply_scene_audio()
     shan_sprite.visible = current_scene_id not in LIUSHAN_HIDDEN_SCENES
     if shan_sprite.visible:
         _play_shan_animation("idle")
@@ -495,7 +503,88 @@ func _render_scene(scene: Dictionary) -> void:
     _render_shan(scene)
     _show_beat(beats[current_beat_index])
 
-# ------------------------------------------------------ investigation panel
+# -------------------------------------------------------------------- audio
+
+func _build_audio() -> void:
+    bgm_player = AudioStreamPlayer.new()
+    bgm_player.bus = "Master"
+    bgm_player.volume_db = -6.0
+    add_child(bgm_player)
+    ambience_player = AudioStreamPlayer.new()
+    ambience_player.volume_db = -12.0
+    add_child(ambience_player)
+    # Small SFX pool so overlapping cues do not cut each other off.
+    for i in 4:
+        var player := AudioStreamPlayer.new()
+        player.volume_db = -4.0
+        add_child(player)
+        sfx_players.append(player)
+
+func _load_audio(resource_id: String) -> AudioStream:
+    if resource_id.is_empty():
+        return null
+    var stream = _load_asset(resource_id)
+    if stream is AudioStreamOggVorbis:
+        (stream as AudioStreamOggVorbis).loop = true
+    return stream if stream is AudioStream else null
+
+func _play_bgm(resource_id: String) -> void:
+    if resource_id == current_bgm:
+        return
+    current_bgm = resource_id
+    if bgm_player == null:
+        return
+    if resource_id.is_empty():
+        bgm_player.stop()
+        return
+    var stream = _load_audio(resource_id)
+    if stream == null:
+        push_warning("Missing BGM: " + resource_id)
+        return
+    bgm_player.stream = stream
+    bgm_player.play()
+
+func _play_ambience(resource_id: String) -> void:
+    if resource_id == current_ambience:
+        return
+    current_ambience = resource_id
+    if ambience_player == null:
+        return
+    if resource_id.is_empty():
+        ambience_player.stop()
+        return
+    var stream = _load_audio(resource_id)
+    if stream == null:
+        push_warning("Missing ambience: " + resource_id)
+        return
+    ambience_player.stream = stream
+    ambience_player.play()
+
+func play_sfx(cue: String) -> void:
+    # Public for smoke tests. cue is a key of manifest.assets.audio_sfx_map.
+    var sfx_map: Dictionary = manifest.get("assets", {}).get("audio_sfx_map", {})
+    var resource_id := str(sfx_map.get(cue, ""))
+    if resource_id.is_empty() or sfx_players.is_empty():
+        return
+    var stream = _load_audio(resource_id)
+    if stream == null:
+        return
+    if stream is AudioStreamOggVorbis:
+        (stream as AudioStreamOggVorbis).loop = false
+    var player := sfx_players[sfx_cursor]
+    sfx_cursor = (sfx_cursor + 1) % sfx_players.size()
+    player.stream = stream
+    player.play()
+
+func _apply_scene_audio() -> void:
+    var scene_map: Dictionary = manifest.get("assets", {}).get("audio_scene_map", {})
+    var entry = scene_map.get(current_scene_id)
+    if not (entry is Dictionary):
+        return
+    _play_bgm(str(entry.get("bgm", "") if entry.get("bgm") != null else ""))
+    _play_ambience(str(entry.get("ambience", "") if entry.get("ambience") != null else ""))
+
+# ---------------------------------------------------- investigation panel
 
 func _render_investigation(scene: Dictionary) -> void:
     _clear_children(invest_box)
@@ -541,6 +630,7 @@ func investigate(object_id: String) -> bool:
             return false
         if _group_locked(object) and not _is_investigated(current_scene_id, object_id):
             choice_hint_label.text = "你已在此处做出取舍，这个机会不再。"
+            play_sfx("locked")
             return false
         for effect in object.get("effects", []):
             _apply_effect(str(effect))
@@ -562,6 +652,7 @@ func investigate(object_id: String) -> bool:
         counts[current_scene_id] = int(counts.get(current_scene_id, 0)) + 1
         runtime["investigation_counts"] = counts
         choice_hint_label.text = "已记录：" + str(object.get("label", object_id))
+        play_sfx("clue_pickup")
         _render_investigation(scene)
         _render_shan(scene)
         _update_status()
@@ -675,6 +766,7 @@ func ask_shan(prompt_id: String) -> String:
     if prompt_id not in answered:
         answered.append(prompt_id)
     runtime["shan_answered"] = answered
+    play_sfx("clue_verify")
     _render_shan(scenes_by_id.get(current_scene_id, {}))
     _update_status()
     return "answered"
@@ -762,6 +854,7 @@ func _offer_fallback_route(choices: Array) -> void:
 func _advance() -> void:
     if waiting_for_choice:
         return
+    play_sfx("paper_turn")
     var scene: Dictionary = scenes_by_id[current_scene_id]
     var beats: Array = scene.get("beats", [])
     current_beat_index += 1
@@ -773,6 +866,7 @@ func _advance() -> void:
 func _choose(choice: Dictionary) -> void:
     if not _choice_available(choice):
         choice_hint_label.text = "当前条件未满足，先完成调查或选择另一条路线。"
+        play_sfx("locked")
         return
     for effect in choice.get("effects", []):
         _apply_effect(str(effect))
@@ -789,6 +883,7 @@ func _choose(choice: Dictionary) -> void:
         else:
             _finish("选择已记录")
     else:
+        play_sfx("branch_confirm")
         _enter_scene(next_id)
 
 # --------------------------------------------------------------- conditions
@@ -1085,6 +1180,7 @@ func _show_ending_eggs() -> void:
     var eggs: Dictionary = manifest.get("easter_eggs", {})
     if eggs.is_empty():
         return
+    play_sfx("ink_stamp")
     # The closing line is the thematic payoff — it owns the dialogue box.
     speaker_label.text = "刘看山"
     var missed: Array = runtime.get("missed_critical_clues", [])
@@ -1140,11 +1236,13 @@ func _open_card(url: String) -> void:
 func _on_save_pressed() -> void:
     if save_game():
         choice_hint_label.text = "已存档：%s · beat %d" % [current_scene_id, current_beat_index]
+        play_sfx("save")
         load_button.disabled = false
 
 func _on_load_pressed() -> void:
     if load_game():
         choice_hint_label.text = "已读档：%s · beat %d" % [current_scene_id, current_beat_index]
+        play_sfx("load")
 
 func save_game() -> bool:
     # Public for smoke tests. Persists the full runtime state dictionary plus

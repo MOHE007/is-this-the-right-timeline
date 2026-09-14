@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "id": "demo2_ch1_manifest",
-  "version": "v01.3",
+  "version": "v01.4",
   "title": "第一章南宋意难平｜资源清单",
   "runtime": "godot-4-web",
   "state": "demo2_ch1_state_v01.json",
@@ -255,6 +255,151 @@
         "type": "texture",
         "path": "res://assets/art/fx/FX_PAPER_GRAIN_OVERLAY_v01.webp",
         "status": "integrated"
+      },
+      "AUD_BGM_ENDING_QUIET_01": {
+        "type": "audio",
+        "path": "res://assets/audio/bgm/AUD_BGM_ENDING_QUIET_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_BGM_INK_MAIN_01": {
+        "type": "audio",
+        "path": "res://assets/audio/bgm/AUD_BGM_INK_MAIN_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_BGM_RECALL_TENSION_01": {
+        "type": "audio",
+        "path": "res://assets/audio/bgm/AUD_BGM_RECALL_TENSION_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_BGM_XINQiji_ACTION_01": {
+        "type": "audio",
+        "path": "res://assets/audio/bgm/AUD_BGM_XINQiji_ACTION_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_AMB_FERRY_MIST_01": {
+        "type": "audio",
+        "path": "res://assets/audio/ambience/AUD_AMB_FERRY_MIST_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_AMB_INDOOR_PAPER_01": {
+        "type": "audio",
+        "path": "res://assets/audio/ambience/AUD_AMB_INDOOR_PAPER_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_AMB_MILITARY_TOWN_01": {
+        "type": "audio",
+        "path": "res://assets/audio/ambience/AUD_AMB_MILITARY_TOWN_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_BRANCH_CONFIRM_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_BRANCH_CONFIRM_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_CLUE_PICKUP_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_CLUE_PICKUP_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_CLUE_VERIFY_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_CLUE_VERIFY_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_DISTANT_BELL_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_DISTANT_BELL_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_FLAG_WIND_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_FLAG_WIND_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_HOOF_DISTANT_01_dry": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_HOOF_DISTANT_01_dry_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_HOOF_DISTANT_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_HOOF_DISTANT_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_HORSE_BREATH_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_HORSE_BREATH_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_INK_SPREAD_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_INK_SPREAD_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_INK_STAMP_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_INK_STAMP_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_LOAD_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_LOAD_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_PAPER_RUSTLE_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_PAPER_RUSTLE_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_PAPER_TURN_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_PAPER_TURN_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_ROUTE_CONNECT_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_ROUTE_CONNECT_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_SAVE_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_SAVE_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_TIMELINE_JUMP_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_TIMELINE_JUMP_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_TIMELINE_TICK_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_TIMELINE_TICK_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_UI_CLICK_INK_heavy": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_UI_CLICK_INK_heavy_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_UI_CLICK_INK_light": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_UI_CLICK_INK_light_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_UI_CLICK_INK": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_UI_CLICK_INK_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_UI_LOCKED_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_UI_LOCKED_01_v01.ogg",
+        "status": "integrated"
+      },
+      "AUD_SFX_WATER_ROPE_01": {
+        "type": "audio",
+        "path": "res://assets/audio/sfx/AUD_SFX_WATER_ROPE_01_v01.ogg",
+        "status": "integrated"
       }
     },
     "character_by_speaker": {
@@ -288,7 +433,77 @@
       "CHAR_MILITARY_COMPANION",
       "FX_RED_INK_SPREAD"
     ],
-    "source_note": "超级真蛋（梁博森）交付 2026-09-14：项目图片(1).zip（PNG 原图 1920x1080/1024x1536），运行时转 WebP q90 入库 assets/art/"
+    "source_note": "超级真蛋（梁博森）交付 2026-09-14：项目图片(1).zip（PNG 原图 1920x1080/1024x1536），运行时转 WebP q90 入库 assets/art/",
+    "audio_scene_map": {
+      "s01_modern_article": {
+        "bgm": null,
+        "ambience": null
+      },
+      "s02_baby_home": {
+        "bgm": null,
+        "ambience": "AUD_AMB_INDOOR_PAPER_01"
+      },
+      "s03_baby_liushanshan": {
+        "bgm": null,
+        "ambience": "AUD_AMB_INDOOR_PAPER_01"
+      },
+      "s04_growth_1127": {
+        "bgm": "AUD_BGM_INK_MAIN_01",
+        "ambience": "AUD_AMB_INDOOR_PAPER_01"
+      },
+      "s05_station": {
+        "bgm": "AUD_BGM_INK_MAIN_01",
+        "ambience": "AUD_AMB_INDOOR_PAPER_01"
+      },
+      "s06_ferry": {
+        "bgm": "AUD_BGM_INK_MAIN_01",
+        "ambience": "AUD_AMB_FERRY_MIST_01"
+      },
+      "s07_military_town": {
+        "bgm": "AUD_BGM_INK_MAIN_01",
+        "ambience": "AUD_AMB_MILITARY_TOWN_01"
+      },
+      "s08_yuefei_countdown": {
+        "bgm": "AUD_BGM_RECALL_TENSION_01",
+        "ambience": "AUD_AMB_MILITARY_TOWN_01"
+      },
+      "s09_recall_chain": {
+        "bgm": "AUD_BGM_RECALL_TENSION_01",
+        "ambience": "AUD_AMB_MILITARY_TOWN_01"
+      },
+      "s10_intervention": {
+        "bgm": "AUD_BGM_RECALL_TENSION_01",
+        "ambience": "AUD_AMB_MILITARY_TOWN_01"
+      },
+      "s11_outcome_router": {
+        "bgm": "AUD_BGM_ENDING_QUIET_01",
+        "ambience": null
+      },
+      "s12_leave_or_continue": {
+        "bgm": "AUD_BGM_ENDING_QUIET_01",
+        "ambience": null
+      },
+      "s13_exit_chapter": {
+        "bgm": "AUD_BGM_ENDING_QUIET_01",
+        "ambience": null
+      },
+      "s14_xinqiji_intro": {
+        "bgm": "AUD_BGM_XINQiji_ACTION_01",
+        "ambience": null
+      }
+    },
+    "audio_sfx_map": {
+      "click": "AUD_SFX_UI_CLICK_INK",
+      "clue_pickup": "AUD_SFX_CLUE_PICKUP_01",
+      "clue_verify": "AUD_SFX_CLUE_VERIFY_01",
+      "locked": "AUD_SFX_UI_LOCKED_01",
+      "save": "AUD_SFX_SAVE_01",
+      "load": "AUD_SFX_LOAD_01",
+      "branch_confirm": "AUD_SFX_BRANCH_CONFIRM_01",
+      "timeline_jump": "AUD_SFX_TIMELINE_JUMP_01",
+      "ink_stamp": "AUD_SFX_INK_STAMP_01",
+      "paper_turn": "AUD_SFX_PAPER_TURN_01"
+    }
   },
   "scene_visuals": {
     "s01_modern_article": "BG_MODERN_ROOM_ARTICLE",
