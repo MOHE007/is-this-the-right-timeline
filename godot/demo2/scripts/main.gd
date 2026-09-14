@@ -964,7 +964,70 @@ func _finish(message: String) -> void:
             names.append(str(CLUE_NAMES.get(missed_id, FRAGMENT_NAMES.get(missed_id, missed_id))))
         missed_line = "\n错过的关键线索：" + "、".join(names)
     dialogue_label.text = message + missed_line + "\n\nDemo2 探索版占位运行时；美术资源将通过 resource_id 接入。"
+    _show_ending_eggs()
     _update_status()
+
+# -------------------------------------------------------------- easter eggs
+
+func _show_ending_eggs() -> void:
+    # Owner-approved closing easter eggs: interactive Yuefei/Xinqiji cards and
+    # the credits avatars. Config lives in manifest.easter_eggs so the card
+    # URLs can switch from localhost to the deployed host without code edits.
+    var ending_raw = runtime.get("ending_id")
+    if not (ending_raw is String) or (ending_raw as String).is_empty():
+        return
+    var eggs: Dictionary = manifest.get("easter_eggs", {})
+    if eggs.is_empty():
+        return
+    # The closing line is the thematic payoff — it owns the dialogue box.
+    speaker_label.text = "刘看山"
+    var missed: Array = runtime.get("missed_critical_clues", [])
+    var missed_line := ""
+    if not missed.is_empty():
+        var names := PackedStringArray()
+        for missed_id in missed:
+            names.append(str(CLUE_NAMES.get(missed_id, FRAGMENT_NAMES.get(missed_id, missed_id))))
+        missed_line = "\n（这一周目错过：" + "、".join(names) + "）"
+    dialogue_label.text = str(eggs.get("closing_line", "")) + missed_line
+    _clear_children(invest_box)
+    _clear_children(shan_box)
+    shan_title.text = ""
+    invest_title.text = "制作组彩蛋"
+    var row := HBoxContainer.new()
+    row.add_theme_constant_override("separation", 28)
+    invest_box.add_child(row)
+    for credit in eggs.get("credits", []):
+        var card := VBoxContainer.new()
+        card.add_theme_constant_override("separation", 6)
+        var portrait := TextureRect.new()
+        var texture = load(str(credit.get("path", "")))
+        if texture:
+            portrait.texture = texture
+        portrait.custom_minimum_size = Vector2(128, 128)
+        portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+        portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+        card.add_child(portrait)
+        var name_label := Label.new()
+        name_label.text = "%s · %s" % [str(credit.get("name", "")), str(credit.get("role", ""))]
+        name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        name_label.add_theme_font_size_override("font_size", 14)
+        name_label.add_theme_color_override("font_color", Color("#d9d0b8"))
+        card.add_child(name_label)
+        row.add_child(card)
+    for card_config in eggs.get("cards", []):
+        var button := Button.new()
+        button.text = "彩蛋 · " + str(card_config.get("label", ""))
+        button.custom_minimum_size = Vector2(320, 42)
+        button.pressed.connect(_open_card.bind(str(card_config.get("url", ""))))
+        choices_box.add_child(button)
+
+func _open_card(url: String) -> void:
+    # OS.shell_open opens the default browser on desktop and a new tab on the
+    # Web export (button press counts as the required user gesture).
+    if url.is_empty():
+        return
+    OS.shell_open(url)
+    choice_hint_label.text = "彩蛋卡片已在浏览器打开"
 
 # -------------------------------------------------------------- save points
 

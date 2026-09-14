@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "id": "demo2_ch1_manifest",
-  "version": "v01.1",
+  "version": "v01.2",
   "title": "第一章南宋意难平｜资源清单",
   "runtime": "godot-4-web",
   "state": "demo2_ch1_state_v01.json",
@@ -128,5 +128,37 @@
     "s12_leave_or_continue": "BG_INK_EMPTY_CAMP_1142",
     "s13_exit_chapter": "FX_PAPER_GRAIN_OVERLAY",
     "s14_xinqiji_intro": "BG_INK_XINQiji_1161"
+  },
+  "easter_eggs": {
+    "note": "结算画面彩蛋。卡片 URL 先用本地端口，公网部署后只改此处，不改代码。",
+    "closing_line": "刚才那些不是游戏关卡，都是你在知乎上没读完的问题。只要有问题，就有回答。",
+    "cards": [
+      {
+        "id": "card_yuefei",
+        "label": "岳飞卡 · 可交互",
+        "url": "http://127.0.0.1:4174/"
+      },
+      {
+        "id": "card_xinqiji",
+        "label": "辛弃疾卡 · 可交互",
+        "url": "http://127.0.0.1:4175/"
+      }
+    ],
+    "credits": [
+      {
+        "id": "super_zhendan",
+        "name": "超级真蛋",
+        "role": "美术/UI",
+        "resource_id": "CREDIT_SUPER_ZHENDAN",
+        "path": "res://assets/art/credits/CREDIT_SUPER_ZHENDAN.jpg"
+      },
+      {
+        "id": "yunli",
+        "name": "云里",
+        "role": "制作组",
+        "resource_id": "CREDIT_YUNLI",
+        "path": "res://assets/art/credits/CREDIT_YUNLI.jpg"
+      }
+    ]
   }
 }
