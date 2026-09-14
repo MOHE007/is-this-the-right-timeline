@@ -25,8 +25,9 @@ jobs:
       - name: Assemble site
         run: |
           set -e
-          rm -rf _site && mkdir -p _site/cards
-          cp -R demo1/* _site/
+          rm -rf _site && mkdir -p _site/cards _site/demo1
+          cp -R demo2-web/* _site/
+          cp -R demo1/* _site/demo1/
           cp -R cards/yuefei _site/cards/yuefei
           cp -R cards/xinqiji _site/cards/xinqiji
       - uses: actions/configure-pages@v5
