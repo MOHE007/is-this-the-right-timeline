@@ -96,9 +96,9 @@ body {
 		</div>
 
 		<script>
-// CDN shim: rebuild index.wasm from 2 parts before the engine loads.
+// CDN shim: rebuild index.wasm from 3 parts before the engine loads.
 (function () {
-  var PARTS = 2;
+  var PARTS = 3;
   var originalFetch = window.fetch.bind(window);
   window.fetch = function (input, init) {
     var url = typeof input === "string" ? input : (input && input.url) || "";

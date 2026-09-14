@@ -15,7 +15,7 @@ import { readFile, writeFile, mkdir, rm, readdir, copyFile } from "node:fs/promi
 import { existsSync } from "node:fs";
 import path from "node:path";
 
-const PART_LIMIT = 19 * 1024 * 1024; // stay safely under jsDelivr's 20MB cap
+const PART_LIMIT = 12 * 1024 * 1024; // jsDelivr starts rejecting ~16MB+ files
 const [exportDir, outDir, cdnBaseArg] = process.argv.slice(2);
 if (!exportDir || !outDir) {
   console.error("Usage: node web/prepare_cdn.mjs <export-dir> <out-dir> [cdn-base-url]");
