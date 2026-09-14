@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "id": "demo2_ch1_manifest",
-  "version": "v01.2",
+  "version": "v01.3",
   "title": "第一章南宋意难平｜资源清单",
   "runtime": "godot-4-web",
   "state": "demo2_ch1_state_v01.json",
@@ -110,8 +110,185 @@
         "anchor": "bottom_center",
         "status": "integrated",
         "source_record": "assets/art/characters/liushan/SOURCE.md"
+      },
+      "BG_INK_BABY_HOME_1122": {
+        "type": "texture",
+        "path": "res://assets/art/bg/BG_INK_BABY_HOME_1122_v01.webp",
+        "status": "integrated"
+      },
+      "BG_INK_EMPTY_CAMP_1142": {
+        "type": "texture",
+        "path": "res://assets/art/bg/BG_INK_EMPTY_CAMP_1142_v01.webp",
+        "status": "integrated"
+      },
+      "BG_INK_FERRY_MIST": {
+        "type": "texture",
+        "path": "res://assets/art/bg/BG_INK_FERRY_MIST_v01.webp",
+        "status": "integrated"
+      },
+      "BG_INK_MIGRATION_MONTAGE": {
+        "type": "texture",
+        "path": "res://assets/art/bg/BG_INK_MIGRATION_MONTAGE_v01.webp",
+        "status": "integrated"
+      },
+      "BG_INK_MILITARY_TOWN": {
+        "type": "texture",
+        "path": "res://assets/art/bg/BG_INK_MILITARY_TOWN_v01.webp",
+        "status": "integrated"
+      },
+      "BG_INK_POST_STATION": {
+        "type": "texture",
+        "path": "res://assets/art/bg/BG_INK_POST_STATION_v01.webp",
+        "status": "integrated"
+      },
+      "BG_INK_RECALL_1141": {
+        "type": "texture",
+        "path": "res://assets/art/bg/BG_INK_RECALL_1141_v01.webp",
+        "status": "integrated"
+      },
+      "BG_INK_SOUTHERN_SONG_1127": {
+        "type": "texture",
+        "path": "res://assets/art/bg/BG_INK_SOUTHERN_SONG_1127_v01.webp",
+        "status": "integrated"
+      },
+      "BG_INK_XINQiji_1161": {
+        "type": "texture",
+        "path": "res://assets/art/bg/BG_INK_XINQiji_1161_v01.webp",
+        "status": "integrated"
+      },
+      "BG_MODERN_ROOM_ARTICLE": {
+        "type": "texture",
+        "path": "res://assets/art/bg/BG_MODERN_ROOM_ARTICLE_v01.webp",
+        "status": "integrated"
+      },
+      "CHAR_CAREGIVER_SILHOUETTE": {
+        "type": "texture",
+        "path": "res://assets/art/characters/CHAR_CAREGIVER_SILHOUETTE_v01.webp",
+        "status": "integrated"
+      },
+      "CHAR_MIGRANT_WITNESS": {
+        "type": "texture",
+        "path": "res://assets/art/characters/CHAR_MIGRANT_WITNESS_v01.webp",
+        "status": "integrated"
+      },
+      "CHAR_OLD_POSTMAN": {
+        "type": "texture",
+        "path": "res://assets/art/characters/CHAR_OLD_POSTMAN_v01.webp",
+        "status": "integrated"
+      },
+      "CHAR_XINQiji_YOUNG": {
+        "type": "texture",
+        "path": "res://assets/art/characters/CHAR_XINQiji_YOUNG_v01.webp",
+        "status": "integrated"
+      },
+      "CHAR_YUEFEI_BACK": {
+        "type": "texture",
+        "path": "res://assets/art/characters/CHAR_YUEFEI_BACK_v01.webp",
+        "status": "integrated"
+      },
+      "PROP_LETTER_UNSENT": {
+        "type": "texture",
+        "path": "res://assets/art/props/PROP_LETTER_UNSENT_v01.webp",
+        "status": "integrated"
+      },
+      "PROP_MILITARY_ORDER": {
+        "type": "texture",
+        "path": "res://assets/art/props/PROP_MILITARY_ORDER_v01.webp",
+        "status": "integrated"
+      },
+      "PROP_RECALL_EDICT": {
+        "type": "texture",
+        "path": "res://assets/art/props/PROP_RECALL_EDICT_v01.webp",
+        "status": "integrated"
+      },
+      "PROP_WET_ROUTE_MAP": {
+        "type": "texture",
+        "path": "res://assets/art/props/PROP_WET_ROUTE_MAP_v01.webp",
+        "status": "integrated"
+      },
+      "UI_CHOICE_BUTTON": {
+        "type": "texture",
+        "path": "res://assets/art/ui/UI_CHOICE_BUTTON_v01.webp",
+        "status": "integrated"
+      },
+      "UI_CLUE_CARD_FRAME": {
+        "type": "texture",
+        "path": "res://assets/art/ui/UI_CLUE_CARD_FRAME_v01.webp",
+        "status": "integrated"
+      },
+      "UI_CURSOR_INK": {
+        "type": "texture",
+        "path": "res://assets/art/ui/UI_CURSOR_INK_v01.webp",
+        "status": "integrated"
+      },
+      "UI_INK_DIALOGUE_FRAME": {
+        "type": "texture",
+        "path": "res://assets/art/ui/UI_INK_DIALOGUE_FRAME_v01.webp",
+        "status": "integrated"
+      },
+      "UI_SEAL_TIMELINE": {
+        "type": "texture",
+        "path": "res://assets/art/ui/UI_SEAL_TIMELINE_v01.webp",
+        "status": "integrated"
+      },
+      "UI_SHAN_PANEL_FRAME": {
+        "type": "texture",
+        "path": "res://assets/art/ui/UI_SHAN_PANEL_FRAME_v01.webp",
+        "status": "integrated"
+      },
+      "UI_TOAST_STAMP": {
+        "type": "texture",
+        "path": "res://assets/art/ui/UI_TOAST_STAMP_v01.webp",
+        "status": "integrated"
+      },
+      "UI_TOPBAR_FRAME": {
+        "type": "texture",
+        "path": "res://assets/art/ui/UI_TOPBAR_FRAME_v01.webp",
+        "status": "integrated"
+      },
+      "FX_MIST_LAYER": {
+        "type": "texture",
+        "path": "res://assets/art/fx/FX_MIST_LAYER_v01.webp",
+        "status": "integrated"
+      },
+      "FX_PAPER_GRAIN_OVERLAY": {
+        "type": "texture",
+        "path": "res://assets/art/fx/FX_PAPER_GRAIN_OVERLAY_v01.webp",
+        "status": "integrated"
       }
-    }
+    },
+    "character_by_speaker": {
+      "老驿卒": "CHAR_OLD_POSTMAN",
+      "迁徙者": "CHAR_MIGRANT_WITNESS",
+      "抚养者": "CHAR_CAREGIVER_SILHOUETTE",
+      "岳飞": "CHAR_YUEFEI_BACK",
+      "辛弃疾": "CHAR_XINQiji_YOUNG",
+      "刘看山": "CHAR_LIUSHAN_WHITE",
+      "军中同伴": null,
+      "玩家": null
+    },
+    "prop_by_clue": {
+      "family_letter": "PROP_LETTER_UNSENT",
+      "military_order": "PROP_MILITARY_ORDER",
+      "route_map": "PROP_WET_ROUTE_MAP",
+      "recall_edict": "PROP_RECALL_EDICT"
+    },
+    "ui_bindings": {
+      "dialogue_frame": "UI_INK_DIALOGUE_FRAME",
+      "topbar": "UI_TOPBAR_FRAME",
+      "choice_button": "UI_CHOICE_BUTTON",
+      "clue_card": "UI_CLUE_CARD_FRAME",
+      "shan_panel": "UI_SHAN_PANEL_FRAME",
+      "toast": "UI_TOAST_STAMP",
+      "cursor": "UI_CURSOR_INK",
+      "timeline_seal": "UI_SEAL_TIMELINE"
+    },
+    "missing_p1": [
+      "CHAR_PLAYER_HAND",
+      "CHAR_MILITARY_COMPANION",
+      "FX_RED_INK_SPREAD"
+    ],
+    "source_note": "超级真蛋（梁博森）交付 2026-09-14：项目图片(1).zip（PNG 原图 1920x1080/1024x1536），运行时转 WebP q90 入库 assets/art/"
   },
   "scene_visuals": {
     "s01_modern_article": "BG_MODERN_ROOM_ARTICLE",

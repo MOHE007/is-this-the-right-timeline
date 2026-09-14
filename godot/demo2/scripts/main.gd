@@ -19,6 +19,11 @@ const MANIFEST_PATH := "res://data/ch1/demo2_ch1_manifest_v01.json"
 const SHAN_PATH := "res://data/ch1/demo2_ch1_shan_answers_v02.json"
 const SAVE_PATH := "user://demo2_ch1_save_v02.json"
 const SHAN_SPRITE_ROOT := "res://assets/art/characters/liushan"
+# Scenes where Liu Kanshan's sprite stays hidden (pre-awakening prologue).
+const LIUSHAN_HIDDEN_SCENES := ["s01_modern_article", "s02_baby_home"]
+# UI_INK_DIALOGUE_FRAME is 1600x360; ink border slice for the dialogue panel.
+const DIALOGUE_SLICE := 110.0
+const DIALOGUE_SLICE_Y := 80.0
 const SHAN_ANIMATION_FRAMES := {
     "idle": 100,
     "question": 120,
@@ -75,6 +80,8 @@ var title_label: Label
 var year_label: Label
 var scene_label: Label
 var visual_panel: ColorRect
+var bg_texture: TextureRect
+var char_portrait: TextureRect
 var visual_title: Label
 var invest_title: Label
 var invest_box: VBoxContainer
@@ -155,6 +162,74 @@ func _read_json(path: String) -> Dictionary:
     var parsed = JSON.parse_string(file.get_as_text())
     return parsed if parsed is Dictionary else {}
 
+# ------------------------------------------------------------------- assets
+
+func _asset_path(resource_id: String) -> String:
+    var bindings: Dictionary = manifest.get("assets", {}).get("bindings", {})
+    var entry = bindings.get(resource_id)
+    if entry is Dictionary:
+        return str(entry.get("path", ""))
+    return ""
+
+func _load_asset(resource_id: String):
+    var path := _asset_path(resource_id)
+    if path.is_empty():
+        return null
+    if not ResourceLoader.exists(path):
+        push_warning("Missing art asset: " + resource_id + " (" + path + ")")
+        return null
+    return load(path)
+
+func _apply_dialogue_frame() -> void:
+    # UI_INK_DIALOGUE_FRAME is 1600x360; slice the ink border so it scales.
+    var texture = _load_asset(str(manifest.get("assets", {}).get("ui_bindings", {}).get("dialogue_frame", "UI_INK_DIALOGUE_FRAME")))
+    if texture == null:
+        return
+    var style := StyleBoxTexture.new()
+    style.texture = texture
+    style.set_texture_margin_all(0)
+    style.texture_margin_left = DIALOGUE_SLICE
+    style.texture_margin_right = DIALOGUE_SLICE
+    style.texture_margin_top = DIALOGUE_SLICE_Y
+    style.texture_margin_bottom = DIALOGUE_SLICE_Y
+    dialogue_panel.add_theme_stylebox_override("panel", style)
+
+func _apply_scene_art() -> void:
+    var resource_id := str(manifest.get("scene_visuals", {}).get(current_scene_id, ""))
+    var texture = _load_asset(resource_id) if not resource_id.is_empty() else null
+    if texture != null:
+        bg_texture.texture = texture
+        bg_texture.visible = true
+        visual_title.visible = false
+    else:
+        bg_texture.visible = false
+        visual_title.visible = true
+        visual_title.text = "占位画面\n" + resource_id
+
+func _apply_speaker_art(speaker: String) -> void:
+    var speaker_map: Dictionary = manifest.get("assets", {}).get("character_by_speaker", {})
+    var resource_id = speaker_map.get(speaker)
+    if resource_id == null or str(resource_id).is_empty():
+        char_portrait.visible = false
+        if shan_sprite != null:
+            shan_sprite.visible = false
+        return
+    if str(resource_id) == "CHAR_LIUSHAN_WHITE":
+        # Liu Kanshan has the animated sprite instead of a still portrait.
+        char_portrait.visible = false
+        if shan_sprite != null and current_scene_id not in LIUSHAN_HIDDEN_SCENES:
+            shan_sprite.visible = true
+            _play_shan_animation("idle")
+        return
+    var texture = _load_asset(str(resource_id))
+    if texture == null:
+        char_portrait.visible = false
+        return
+    char_portrait.texture = texture
+    char_portrait.visible = true
+    if shan_sprite != null:
+        shan_sprite.visible = false
+
 # ----------------------------------------------------------------------- ui
 
 func _build_ui() -> void:
@@ -168,6 +243,24 @@ func _build_ui() -> void:
     visual_panel.position = Vector2(40, 34)
     visual_panel.size = Vector2(1200, 510)
     add_child(visual_panel)
+
+    # Scene background art (manifest.scene_visuals -> assets.bindings).
+    bg_texture = TextureRect.new()
+    bg_texture.position = Vector2.ZERO
+    bg_texture.size = visual_panel.size
+    bg_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    bg_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+    bg_texture.visible = false
+    visual_panel.add_child(bg_texture)
+
+    # Speaking character portrait, center stage.
+    char_portrait = TextureRect.new()
+    char_portrait.position = Vector2(432, 34)
+    char_portrait.size = Vector2(336, 470)
+    char_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    char_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    char_portrait.visible = false
+    visual_panel.add_child(char_portrait)
 
     visual_title = Label.new()
     visual_title.position = Vector2(40, 40)
@@ -246,6 +339,7 @@ func _build_ui() -> void:
     dialogue_panel = PanelContainer.new()
     dialogue_panel.position = Vector2(40, 574)
     dialogue_panel.size = Vector2(820, 116)
+    _apply_dialogue_frame()
     add_child(dialogue_panel)
     var dialogue_margin := MarginContainer.new()
     dialogue_margin.add_theme_constant_override("margin_left", 18)
@@ -380,9 +474,8 @@ func _render_scene(scene: Dictionary) -> void:
     if beats.is_empty():
         _finish("场景没有内容：" + current_scene_id)
         return
-    var resource_id := str(manifest.get("scene_visuals", {}).get(current_scene_id, scene.get("visual", "art_slot")))
-    visual_title.text = "占位画面\n" + resource_id
-    shan_sprite.visible = current_scene_id not in ["s01_modern_article", "s02_baby_home"]
+    _apply_scene_art()
+    shan_sprite.visible = current_scene_id not in LIUSHAN_HIDDEN_SCENES
     if shan_sprite.visible:
         _play_shan_animation("idle")
     scene_label.text = str(scene.get("title", current_scene_id)) + "   ·   scene_id: " + current_scene_id
@@ -403,7 +496,8 @@ func _render_investigation(scene: Dictionary) -> void:
         var done := _is_investigated(current_scene_id, object_id)
         var group_locked := _group_locked(object) and not done
         var button := Button.new()
-        var prefix := "✓ " if done else ("✕ " if group_locked else "◻ ")
+        # Glyphs limited to what the bundled subset font carries (✓ ● ◆ · —).
+        var prefix := "✓ " if done else ("— " if group_locked else "· ")
         button.text = prefix + str(object.get("label", object_id))
         button.custom_minimum_size = Vector2(380, 38)
         button.disabled = (done and bool(object.get("once", true))) or group_locked
@@ -590,6 +684,7 @@ func _show_beat(beat: Dictionary) -> void:
         for effect in beat.get("effects", []):
             _apply_effect(str(effect))
     speaker_label.text = str(beat.get("speaker", "旁白"))
+    _apply_speaker_art(str(beat.get("speaker", "旁白")))
     dialogue_label.text = str(beat.get("text", ""))
     continue_button.visible = true
     continue_button.disabled = false
