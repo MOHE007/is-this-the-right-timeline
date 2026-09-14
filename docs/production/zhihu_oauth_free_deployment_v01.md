@@ -48,11 +48,18 @@ node /Users/mac/.codex/skills/zhihu-hackathon/scripts/configure_callback.mjs \
 
 把完全相同的 HTTPS 地址登记到知乎开放平台，然后重新部署。回调地址不能使用 `localhost` 或 `127.0.0.1`。
 
+## 部署结果（2026-09-14 完成）
+
+- **公网地址**：`https://ifesrjkdxats.cloud.sealos.io`（Sealos 新加坡区，Free 套餐）。
+- **镜像**：`ghcr.io/mohe007/zhihu-oauth:latest`（GitHub Actions 自动构建，public）。
+- **回调**：`https://ifesrjkdxats.cloud.sealos.io/auth/callback`，经 `ZHIHU_REDIRECT_URI` 环境变量注入（`lib/oauth.mjs` 支持 env 覆盖，改 URL 不用重打镜像）。
+- **密钥**：`ZHIHU_OAUTH_APP_KEY` / `ZHIHU_ACCESS_SECRET` 以 Sealos 环境变量注入，值在 macOS 钥匙串，不入库。
+- **实测**：`/api/health` `{ok:true,oauthEnabled:true}`；`/api/oauth/status` `configured:true, callbackConfigured:true`。
+
 ## 尚待队长操作
 
-- **Sealos「绑定手机号」**（收短信，DSH 无法代办）——其余部署步骤见下。
-- 从知乎开放平台登记回调地址。
-- 用户本人在部署后的页面点击最终授权确认。
+- **从知乎开放平台登记回调地址** `https://ifesrjkdxats.cloud.sealos.io/auth/callback`（DSH 无知乎账号，无法代办）。
+- **用户本人在部署后的页面点击最终授权确认**（`/` 页面点「连接知乎」）。
 
 ## Sealos 操作步骤（队长已定：改用 Sealos）
 
