@@ -1,0 +1,22 @@
+Godot Engine v4.3.stable.official.77dcf97d8 - https://godotengine.org
+
+ROUTE divergent_verified: OK | ending=ending_divergent expected=ending_divergent | steps=30
+  trail: s01_modern_article -> s02_baby_home -> s03_baby_liushanshan -> s04_growth_1127 -> s05_station -> s06_ferry -> s07_military_town -> s08_yuefei_countdown -> s09_recall_chain -> s10_intervention -> s11_outcome_router -> s12_leave_or_continue -> s13_exit_chapter
+  state: clues=3 verified=2 fragments=3 missed=1 inquiries=10 trust=5 shan_left=2 branch=intervene
+  shan: ["answered", "answered"]
+ROUTE divergent_unverified: OK | ending=ending_canonical expected=ending_canonical | steps=30 | fallback
+  trail: s01_modern_article -> s02_baby_home -> s03_baby_liushanshan -> s04_growth_1127 -> s05_station -> s06_ferry -> s07_military_town -> s08_yuefei_countdown -> s09_recall_chain -> s10_intervention -> s11_outcome_router -> s12_leave_or_continue -> s13_exit_chapter
+  state: clues=3 verified=0 fragments=2 missed=2 inquiries=6 trust=5 shan_left=4 branch=intervene
+ROUTE truth_verified: OK | ending=ending_truth expected=ending_truth | steps=33
+  trail: s01_modern_article -> s02_baby_home -> s03_baby_liushanshan -> s04_growth_1127 -> s05_station -> s06_ferry -> s07_military_town -> s08_yuefei_countdown -> s09_recall_chain -> s10_intervention -> s11_outcome_router -> s12_leave_or_continue -> s14_xinqiji_intro
+  state: clues=4 verified=1 fragments=3 missed=1 inquiries=7 trust=1 shan_left=3 branch=witness
+  shan: ["answered"]
+ROUTE canonical_missed: OK | ending=ending_canonical expected=ending_canonical | steps=30
+  trail: s01_modern_article -> s02_baby_home -> s03_baby_liushanshan -> s04_growth_1127 -> s05_station -> s06_ferry -> s07_military_town -> s08_yuefei_countdown -> s09_recall_chain -> s10_intervention -> s11_outcome_router -> s12_leave_or_continue -> s13_exit_chapter
+  state: clues=3 verified=0 fragments=2 missed=2 inquiries=4 trust=2 shan_left=4 branch=witness
+ROUTE exhausted_questions: OK | ending=ending_canonical expected=ending_canonical | steps=30
+  trail: s01_modern_article -> s02_baby_home -> s03_baby_liushanshan -> s04_growth_1127 -> s05_station -> s06_ferry -> s07_military_town -> s08_yuefei_countdown -> s09_recall_chain -> s10_intervention -> s11_outcome_router -> s12_leave_or_continue -> s13_exit_chapter
+  state: clues=3 verified=0 fragments=2 missed=2 inquiries=8 trust=2 shan_left=0 branch=witness
+  shan: ["insufficient", "insufficient", "insufficient", "insufficient", "exhausted"]
+SAVE/LOAD: OK | scene=s07_military_town beat=0 trust=0 clues=4
+SMOKE OK: 5/5 routes + save/load reached expectations
