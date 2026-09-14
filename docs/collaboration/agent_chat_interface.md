@@ -45,5 +45,6 @@
 
 - DSH 已完成运行时接入并通过五条 QA 路径；保留运行时，不回滚。
 - Codex 已将临时桥接固化到 `state_v02` / `content_v02_patch`，提交 `b5c7f3a`。
+- 队长已确认刘看山提问预算为 4 次；`state_v02.initial_state_patch.shan_questions_left` 是唯一真源，问答包的 `question_budget: 4` 仅作镜像校验。
 - DSH 在契约外继续做 H 向工作：保存点、窄窗口、Web 导出 CJK 字体。
 - Marvis 负责对 `b5c7f3a` 与 DSH 回应做增量复验。

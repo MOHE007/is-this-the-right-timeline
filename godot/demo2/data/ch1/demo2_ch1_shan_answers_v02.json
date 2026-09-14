@@ -2,20 +2,20 @@
   "schema_version": "1.0",
   "id": "demo2_ch1_shan_answers",
   "version": "v02",
+  "revision": "v0.2.2",
   "title": "第一章南宋意难平｜刘看山本地问答库",
-  "status": "draft-for-marvis-review",
+  "status": "v0.2.2-candidate",
   "source_docs": ["demo2_ch1_script_v02.md", "demo2_ch1_exploration_system_v02.md", "demo2_ch1_clues_v02.md"],
-  "notes": "本地降级问答库：无网络时必须可完整通关。fact/context/counter_question 三段式；缺道具返回 insufficient 且仍消耗提问次数；次数耗尽返回 exhausted 且不消耗。",
-  "question_budget": 3,
+  "notes": "本地降级问答库：无网络时必须可完整通关。fact/context/counter_question 三段式；缺道具返回 insufficient 且仍消耗提问次数；次数耗尽返回 exhausted 且不消耗。requires_any/effects 以 content v0.2.2 场景内 shan_prompts 对象为准，本库提供文案；提问预算唯一真源为 state_v02.initial_state_patch.shan_questions_left，question_budget=4 仅作镜像校验。",
+  "question_budget": 4,
   "exhausted_text": "我的验证次数用完了。剩下的路，要靠你已经看见、已经拿到的东西自己走。",
   "prompts": {
     "route_explain": {
       "label": "这条路为什么能走通？",
       "requires_any": ["route_map", "route_map_fragment"],
-      "consume": 1,
-      "effects": ["verify_route", "consume_shan_question"],
+      "effects": ["ask_context", "verify_route", "consume_shan_question"],
       "answer": {
-        "fact": "事实：军情走急脚递，家书只能走步递；一条路线能否走通，取决于每一段递铺有没有人接。",
+        "fact": "事实：军情走急脚递，家书多走步递；一条路线能否走通，取决于每一段递铺有没有人接。",
         "context": "背景：你手里的路线连起了方向、渡口与驻地，说明消息不是凭空出现，而是沿着可验证的节点移动。",
         "counter_question": "反问：知道路能走通之后，你打算让什么消息走这条路？"
       },
@@ -24,8 +24,7 @@
     "letter_chain": {
       "label": "一封家书能证明什么？",
       "requires_any": ["family_letter"],
-      "consume": 1,
-      "effects": ["consume_shan_question"],
+      "effects": ["ask_fact", "verify_route", "consume_shan_question"],
       "answer": {
         "fact": "事实：这封家书没有官印，却经过三双手抵达，说明普通人的消息也在这个体系里流动。",
         "context": "背景：官方的军书证明命令存在，家书证明有人在承受命令的后果。两者合起来才是完整的 1141。",
@@ -36,8 +35,7 @@
     "recall_chain": {
       "label": "召回链如何成立？",
       "requires_any": ["military_order"],
-      "consume": 1,
-      "effects": ["verify_recall_chain", "consume_shan_question"],
+      "effects": ["ask_fact", "verify_recall_chain", "consume_shan_question"],
       "answer": {
         "fact": "事实：1140 年班师诏已成事实；1141 年真正的链条是罢兵权、构陷、下狱与和议，一环扣一环。",
         "context": "背景：军书写得再快，也要有来源、路线、接收者和执行能力四个环节；缺一环，预警只是纸。",
@@ -48,8 +46,7 @@
     "recipient_identity": {
       "label": "谁能执行这个预警？",
       "requires_any": ["recall_recipient_token"],
-      "consume": 1,
-      "effects": ["verify_recipient", "consume_shan_question"],
+      "effects": ["ask_counterfactual", "verify_recipient", "consume_shan_question"],
       "answer": {
         "fact": "事实：传令牌意味着持有者被军中认可，能把话送进该听见的人耳朵里。",
         "context": "背景：消息的可靠不在于说的人有多急，而在于收的人有没有资格照做。",
@@ -60,10 +57,9 @@
     "testimony_meaning": {
       "label": "这句证言能证明什么？",
       "requires_any": ["civilian_testimony"],
-      "consume": 1,
-      "effects": ["verify_testimony", "consume_shan_question"],
+      "effects": ["ask_context", "verify_testimony", "consume_shan_question"],
       "answer": {
-        "fact": "事实：迁徙者说\"我们不是谁的数字\"。这句话证明命令落在具体的人身上，不只落在地图上。",
+        "fact": "事实：迁徙者说\"我们不是纸上的一个名字\"。这句话证明命令落在具体的人身上，不只落在地图上。",
         "context": "背景：历史记录常常只剩军书与和议；被保存的普通人证言，是真相线最缺的那一块。",
         "counter_question": "反问：如果有一天只有你记得这句话，你会替他们说出来吗？"
       },

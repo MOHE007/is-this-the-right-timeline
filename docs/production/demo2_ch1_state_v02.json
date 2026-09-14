@@ -2,6 +2,7 @@
   "schema_version": "1.0",
   "id": "demo2_ch1_state",
   "version": "v02",
+  "revision": "v0.2.2",
   "title": "第一章南宋意难平｜探索状态契约",
   "status": "draft-for-integration",
   "extends": "demo2_ch1_state_v01.json",
@@ -13,6 +14,11 @@
     ],
     "failure_mode": "continue_with_explicit_consequence",
     "demo1_preserved": true
+  },
+  "question_budget": {
+    "value": 4,
+    "source": "initial_state_patch.shan_questions_left",
+    "semantics": "四次刘看山验证机会；缺道具提问也消耗，次数耗尽不阻塞普通收束"
   },
   "initial_state_patch": {
     "clue_fragments": [],
@@ -93,6 +99,8 @@
       }
     },
     "remember_missed_clue": {
+      "deprecated": true,
+      "replacement": "remember_missed_clue_if_absent",
       "append_unique": {
         "missed_critical_clues": "$clue_id"
       }
@@ -139,6 +147,47 @@
     "use_unreliable_delivery": {
       "increment": {
         "knowledge_debt": 1
+      }
+    },
+    "ask_fact": {
+      "increment": {
+        "inquiry_count": 1
+      },
+      "append_unique": {
+        "inquiry_types": "fact"
+      }
+    },
+    "ask_context": {
+      "increment": {
+        "inquiry_count": 1
+      },
+      "append_unique": {
+        "inquiry_types": "context"
+      }
+    },
+    "ask_counterfactual": {
+      "increment": {
+        "inquiry_count": 1
+      },
+      "append_unique": {
+        "inquiry_types": "counterfactual"
+      }
+    },
+    "gain_military_trust": {
+      "increment": {
+        "trust_military": 1
+      }
+    },
+    "fail_delivery": {
+      "set": {
+        "warning_delivered": false,
+        "recall_delayed": false
+      }
+    },
+    "set_ending_canonical": {
+      "set": {
+        "timeline": "canonical",
+        "ending_id": "ending_canonical"
       }
     }
   },
@@ -370,33 +419,45 @@
   "nodes_patch": [
     {
       "id": "s05_station",
-      "entry_conditions": {
-        "any": [
-          "s04_arrival",
-          "route_history_continues"
+        "entry_conditions": {
+        "all": [
+          {
+            "eq": [
+              "year",
+              1127
+            ]
+          }
         ]
       }
     },
     {
       "id": "s06_ferry",
       "entry_conditions": {
-        "any": [
-          "s05_station_complete",
-          "s04_arrival"
+        "all": [
+          {
+            "eq": [
+              "year",
+              1127
+            ]
+          }
         ]
       }
     },
     {
       "id": "s07_military_town",
       "entry_conditions": {
-        "any": [
-          "s06_ferry_complete",
-          "s05_station_complete"
+        "all": [
+          {
+            "eq": [
+              "year",
+              1127
+            ]
+          }
         ]
       }
     },
     {
-      "id": "s09_1141_gate",
+      "id": "s09_recall_chain",
       "entry_conditions": {
         "all": [
           {

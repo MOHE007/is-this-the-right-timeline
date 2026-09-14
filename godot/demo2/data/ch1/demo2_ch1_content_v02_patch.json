@@ -2,6 +2,7 @@
   "schema_version": "1.0",
   "id": "demo2_ch1_content_patch",
   "version": "v02",
+  "revision": "v0.2.2",
   "base_content": "demo2_ch1_content_v01.json",
   "merge_rule": "replace scenes by id; keep all unspecified scenes from v01",
   "scenes": [
@@ -46,7 +47,7 @@
       "shan_prompts": [
         {
           "id": "route_explain",
-          "requires": [
+          "requires_any": [
             "route_map_fragment",
             "route_map"
           ],
@@ -58,7 +59,7 @@
         },
         {
           "id": "letter_chain",
-          "requires": [
+          "requires_any": [
             "family_letter"
           ],
           "effects": [
@@ -112,7 +113,7 @@
       "shan_prompts": [
         {
           "id": "testimony_meaning",
-          "requires": [
+          "requires_any": [
             "civilian_testimony"
           ],
           "effects": [
@@ -123,7 +124,7 @@
         },
         {
           "id": "route_explain",
-          "requires": [
+          "requires_any": [
             "route_map_fragment",
             "route_map"
           ],
@@ -178,7 +179,7 @@
       "shan_prompts": [
         {
           "id": "recall_chain",
-          "requires": [
+          "requires_any": [
             "military_order"
           ],
           "effects": [
@@ -189,7 +190,7 @@
         },
         {
           "id": "recipient_identity",
-          "requires": [
+          "requires_any": [
             "recall_recipient_token"
           ],
           "effects": [
