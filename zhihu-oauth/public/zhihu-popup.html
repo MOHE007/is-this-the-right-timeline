@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>知乎授权</title>
+    <style>
+      body { margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
+             background: #12100e; color: #e8e2d6; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+      .card { text-align: center; padding: 28px 32px; border: 1px solid #3a342c; border-radius: 10px; background: #1a1713; max-width: 340px; }
+      .stamp { font-size: 34px; margin-bottom: 10px; }
+      h1 { font-size: 17px; margin: 0 0 8px; font-weight: 600; }
+      p { font-size: 13px; line-height: 1.7; margin: 6px 0; color: #b8b0a2; }
+      .name { color: #d9a05b; font-weight: 600; }
+      button { margin-top: 16px; padding: 8px 18px; font-size: 13px; border-radius: 6px; cursor: pointer;
+               border: 1px solid #4a4238; background: #26211b; color: #e8e2d6; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="stamp" id="stamp">⏳</div>
+      <h1 id="title">正在读取授权结果…</h1>
+      <p id="detail"></p>
+      <button id="close" hidden>关闭窗口</button>
+    </div>
+    <script>
+      // This page is same-origin with the API, so it reads the session summary
+      // here and relays it to the game window — the game never calls the API
+      // cross-origin, so no CORS or third-party cookie problems.
+      (async () => {
+        const params = new URLSearchParams(location.search);
+        const failed = params.get('oauth') === 'error';
+        let summary = null;
+        try {
+          const response = await fetch('/api/oauth/summary', { headers: { accept: 'application/json' } });
+          summary = await response.json();
+        } catch (error) { /* fall through to the error state below */ }
+
+        const ok = !failed && summary?.authorized;
+        const profile = summary?.profile || {};
+        const counts = summary?.counts || {};
+
+        document.getElementById('stamp').textContent = ok ? '✓' : '×';
+        document.getElementById('title').textContent = ok ? '已连接知乎' : '授权未完成';
+        if (ok) {
+          const parts = [];
+          if (profile.name) parts.push(`账号：<span class="name">${profile.name}</span>`);
+          parts.push(`已读取 创作 ${counts.contents ?? 0} · 关注 ${counts.followees ?? 0} · 收藏夹 ${counts.favlists ?? 0}`);
+          document.getElementById('detail').innerHTML = parts.join('<br />');
+        } else {
+          document.getElementById('detail').textContent = summary?.error?.message || '请回到游戏重试，或检查知乎开放平台的回调登记。';
+        }
+
+        const payload = {
+          type: 'ithrtt-zhihu',
+          status: ok ? 'ok' : 'error',
+          name: profile.name || null,
+          avatar: profile.avatarUrl || null,
+          headline: profile.headline || null,
+          url: profile.url || null,
+          counts,
+          message: summary?.error?.message || null,
+        };
+
+        // Relay to the game window. The game passes its own origin when it
+        // starts the flow; fall back to '*' only if that was not recorded.
+        try {
+          if (window.opener && !window.opener.closed) {
+            const relay = await fetch('/api/oauth/relay').then((r) => r.json()).catch(() => null);
+            const target = relay?.origin || '*';
+            window.opener.postMessage(payload, target);
+            setTimeout(() => window.close(), 1200);
+          }
+        } catch (error) { /* the game can also poll the summary itself */ }
+
+        const closeButton = document.getElementById('close');
+        closeButton.hidden = false;
+        closeButton.addEventListener('click', () => window.close());
+      })();
+    </script>
+  </body>
+</html>

@@ -85,15 +85,34 @@ export function createOAuth(config) {
   }
 
   function session(request, response) {
+    // Cache per request: several helpers call session() during one request, and
+    // without this each call would mint a fresh session (no cookie yet on the
+    // first hit), so data written by one helper would vanish for the next.
+    if (request.__zhihuSession) return request.__zhihuSession;
     let id = cookieId(request);
     let current = id ? sessions.get(id) : null;
     if (!current) {
       id = randomBytes(24).toString('base64url');
-      current = { id, state: null, token: null, expiresAt: null, profile: null, stateVerified: null, error: null };
+      current = { id, state: null, token: null, expiresAt: null, profile: null, stateVerified: null, error: null, popupOrigin: null, mode: null };
       sessions.set(id, current);
       response.setHeader('Set-Cookie', `zhihu_hackathon_session=${id}; HttpOnly; SameSite=Lax; Path=/; Max-Age=28800`);
     }
+    request.__zhihuSession = current;
     return current;
+  }
+
+  // A game page opening the flow in a popup only needs the result relayed back
+  // to its own origin, so the service records where to send it.
+  function setRelay(request, response, { origin, mode }) {
+    const current = session(request, response);
+    current.popupOrigin = origin || null;
+    current.mode = mode || null;
+    return current;
+  }
+
+  function relay(request, response) {
+    const current = session(request, response);
+    return { origin: current.popupOrigin, mode: current.mode };
   }
 
   async function credentials() {
@@ -232,5 +251,30 @@ export function createOAuth(config) {
     session(request, response).error = { code: String(error.code || 'OAUTH_FAILED'), message: String(error.message).slice(0, 200) };
   }
 
-  return { status, start, callback, runAll, logout, record };
+  // Compact payload for the in-game panel: who is connected plus a count of
+  // each account interface so the player sees the five integrations working.
+  async function summary(request, response) {
+    const current = session(request, response);
+    const base = await status(request, response);
+    const payload = {
+      authorized: base.authorized,
+      profile: base.profile,
+      error: base.error,
+      counts: { contents: 0, followees: 0, favlists: 0, favlist_contents: 0, collections: 0 },
+      interfaces: userInterfaces.length,
+    };
+    if (!base.authorized) return payload;
+    try {
+      const results = await runAll(request, response);
+      for (const result of results) {
+        const items = result.item?.Data?.Items ?? result.item?.data?.items;
+        payload.counts[result.id] = Array.isArray(items) ? items.length : (result.item ? 1 : 0);
+      }
+    } catch (error) {
+      payload.error = { code: String(error.code || 'SUMMARY_FAILED'), message: String(error.message).slice(0, 200) };
+    }
+    return payload;
+  }
+
+  return { status, start, callback, runAll, logout, record, setRelay, relay, summary };
 }

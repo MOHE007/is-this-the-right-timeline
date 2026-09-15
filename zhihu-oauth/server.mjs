@@ -23,18 +23,39 @@ function headers(type = 'application/json; charset=utf-8') {
 function json(response, status, payload) { response.writeHead(status, headers()); response.end(JSON.stringify(payload)); }
 function redirect(response, location) { response.writeHead(302, { Location: location, 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' }); response.end(); }
 
+// Only these origins may receive the postMessage relay, so the flow cannot be
+// turned into an open redirect or used to leak a session to another site.
+const ALLOWED_RELAY_HOSTS = new Set(['mohe007.github.io']);
+function safeRelayOrigin(raw) {
+  if (!raw) return null;
+  try {
+    const parsed = new URL(raw);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
+    const host = parsed.hostname;
+    if (ALLOWED_RELAY_HOSTS.has(host) || host === '127.0.0.1' || host === 'localhost') return parsed.origin;
+    return null;
+  } catch { return null; }
+}
+
 const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, `http://${config.host}:${config.port}`);
   try {
     if (request.method === 'GET' && url.pathname === '/api/health') return json(response, 200, { ok: true, project: config.projectName, oauthEnabled: true });
     if (request.method === 'GET' && url.pathname === '/api/oauth/status') return json(response, 200, { ok: true, ...(await oauth.status(request, response)) });
+    if (request.method === 'GET' && url.pathname === '/api/oauth/summary') return json(response, 200, { ok: true, ...(await oauth.summary(request, response)) });
+    if (request.method === 'GET' && url.pathname === '/api/oauth/relay') return json(response, 200, { ok: true, ...oauth.relay(request, response) });
     if (request.method === 'GET' && url.pathname === '/api/oauth/start') {
+      const mode = url.searchParams.get('mode') === 'popup' ? 'popup' : null;
+      const origin = safeRelayOrigin(url.searchParams.get('origin'));
+      if (mode) oauth.setRelay(request, response, { origin, mode });
       try { return redirect(response, await oauth.start(request, response)); }
       catch (error) { oauth.record(request, response, error); return redirect(response, '/?oauth=error'); }
     }
     if (request.method === 'GET' && url.pathname === '/auth/callback') {
-      try { await oauth.callback(request, response, url); return redirect(response, '/?oauth=success'); }
-      catch (error) { oauth.record(request, response, error); return redirect(response, '/?oauth=error'); }
+      const relay = oauth.relay(request, response);
+      const popupLanding = relay.mode === 'popup' ? '/zhihu-popup.html' : '/?oauth=success';
+      try { await oauth.callback(request, response, url); return redirect(response, popupLanding); }
+      catch (error) { oauth.record(request, response, error); return redirect(response, relay.mode === 'popup' ? '/zhihu-popup.html?oauth=error' : '/?oauth=error'); }
     }
     if (request.method === 'POST' && url.pathname === '/api/oauth/run-all') return json(response, 200, { ok: true, results: await oauth.runAll(request, response) });
     if (request.method === 'POST' && url.pathname === '/api/oauth/logout') { oauth.logout(request, response); return json(response, 200, { ok: true }); }
