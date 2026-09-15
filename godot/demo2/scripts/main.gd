@@ -105,8 +105,10 @@ var save_button: Button
 var load_button: Button
 var zhihu_button: Button
 var zhihu_pending := false
-var zhihu_watch_until := 0
-var zhihu_last_raw := ""
+var zhihu_code := ""
+var zhihu_poll_accum := 0.0
+var zhihu_deadline := 0
+var zhihu_http: HTTPRequest
 var bgm_player: AudioStreamPlayer
 var ambience_player: AudioStreamPlayer
 var sfx_players: Array[AudioStreamPlayer] = []
@@ -118,11 +120,17 @@ func _ready() -> void:
     _load_contracts()
     _build_ui()
     _build_audio()
+    _build_zhihu_http()
     _enter_scene(current_scene_id)
 
-func _process(_delta: float) -> void:
-    # Only does work while a Zhihu authorization popup is open.
-    _poll_zhihu_result()
+func _process(delta: float) -> void:
+    # Only does work while a Zhihu authorization is in flight.
+    if not zhihu_pending:
+        return
+    zhihu_poll_accum += delta
+    if zhihu_poll_accum >= 2.0:
+        zhihu_poll_accum = 0.0
+        _poll_zhihu_handoff()
 
 # ---------------------------------------------------------------- contracts
 
@@ -1276,78 +1284,75 @@ func _open_card(url: String) -> void:
 
 # ------------------------------------------------------------ zhihu account
 
-func _on_zhihu_pressed() -> void:
-    # The OAuth service handles the whole exchange; a popup reports back with
-    # postMessage so the game never issues a cross-origin API call.
-    var start_url := ZHIHU_OAUTH_BASE + "/api/oauth/start"
-    if not OS.has_feature("web"):
-        OS.shell_open(start_url)
-        choice_hint_label.text = "已在浏览器打开知乎授权页；授权完成后回到游戏即可继续。"
-        return
-    var origin := str(JavaScriptBridge.eval("window.location.origin"))
-    var url := "%s?mode=popup&origin=%s" % [start_url, origin.uri_encode()]
-    JavaScriptBridge.eval("""
-        window.__zhihuResult = null;
-        if (!window.__ithrttZhihuListener) {
-            window.__ithrttZhihuListener = true;
-            window.addEventListener('message', function (event) {
-                if (event && event.data && event.data.type === 'ithrtt-zhihu') {
-                    window.__zhihuResult = event.data;
-                }
-            });
-        }
-        window.open('%s', 'zhihu-oauth', 'width=520,height=700');
-    """ % url)
-    zhihu_pending = true
-    zhihu_watch_until = 0
-    zhihu_button.text = "授权中…"
-    choice_hint_label.text = "已打开知乎授权窗口，请在新窗口完成授权。"
+func _build_zhihu_http() -> void:
+    zhihu_http = HTTPRequest.new()
+    zhihu_http.request_completed.connect(_on_zhihu_poll_completed)
+    add_child(zhihu_http)
 
-func _poll_zhihu_result() -> void:
-    if not zhihu_pending or not OS.has_feature("web"):
+func _make_zhihu_code() -> String:
+    var alphabet := "abcdefghijklmnopqrstuvwxyz0123456789"
+    var code := ""
+    for _i in 18:
+        code += alphabet[randi() % alphabet.length()]
+    return code
+
+func _on_zhihu_pressed() -> void:
+    # The OAuth service does the exchange and publishes the result under a
+    # handoff code; the game polls for it. Polling works on web AND desktop and
+    # does not depend on window.opener, postMessage or cross-origin cookies.
+    zhihu_code = _make_zhihu_code()
+    zhihu_deadline = Time.get_ticks_msec() + 300000
+    var url := "%s/api/oauth/start?handoff=%s" % [ZHIHU_OAUTH_BASE, zhihu_code]
+    if OS.has_feature("web"):
+        var origin := str(JavaScriptBridge.eval("window.location.origin"))
+        url += "&mode=popup&origin=" + origin.uri_encode()
+        JavaScriptBridge.eval("window.open('%s', 'zhihu-oauth', 'width=520,height=720');" % url)
+    else:
+        OS.shell_open(url)
+    zhihu_pending = true
+    zhihu_poll_accum = 0.0
+    zhihu_button.text = "等待授权…"
+    choice_hint_label.text = "已打开知乎授权页；完成授权后游戏会自动识别。"
+
+func _poll_zhihu_handoff() -> void:
+    if zhihu_code.is_empty():
         return
-    # The popup relays the connection first and the account counts second, so
-    # keep watching for a while after the first message.
-    if zhihu_watch_until > 0 and Time.get_ticks_msec() > zhihu_watch_until:
-        zhihu_pending = false
+    if zhihu_http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
         return
-    var raw := str(JavaScriptBridge.eval("window.__zhihuResult ? JSON.stringify(window.__zhihuResult) : ''"))
-    if raw.is_empty():
+    zhihu_http.request(ZHIHU_OAUTH_BASE + "/api/oauth/handoff?code=" + zhihu_code)
+
+func _on_zhihu_poll_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+    if result != HTTPRequest.RESULT_SUCCESS or response_code != 200:
         return
-    var data = JSON.parse_string(raw)
-    if not (data is Dictionary):
+    var data = JSON.parse_string(body.get_string_from_utf8())
+    if not (data is Dictionary) or not bool(data.get("found", false)):
         return
-    if raw == zhihu_last_raw:
+    var profile = data.get("profile")
+    var name := str(profile.get("name", "")) if profile is Dictionary else ""
+    if not bool(data.get("authorized", false)):
+        # Still waiting on the player to finish authorizing.
+        if Time.get_ticks_msec() > zhihu_deadline:
+            zhihu_pending = false
+            zhihu_button.text = "连接知乎"
+            choice_hint_label.text = "知乎授权超时，可以稍后再试。"
+        elif zhihu_pending:
+            zhihu_button.text = "等待授权…"
         return
-    zhihu_last_raw = raw
-    JavaScriptBridge.eval("window.__ithrttZhihuState = 'seen:" + str(data.get("status", "?")) + "';")
-    if str(data.get("status", "")) != "ok":
-        zhihu_pending = false
-        zhihu_button.text = "连接知乎"
-        zhihu_button.disabled = false
-        choice_hint_label.text = "知乎授权未完成：" + str(data.get("message", "请重试"))
-        return
-    var name := str(data.get("name", ""))
+    zhihu_pending = false
     zhihu_button.text = "知乎：" + (name if not name.is_empty() else "已连接")
     zhihu_button.disabled = true
     runtime["zhihu_connected"] = true
     runtime["zhihu_name"] = name
-    JavaScriptBridge.eval("window.__ithrttZhihuState = 'ok';")
-    var counts = data.get("counts")
-    if counts is Dictionary:
-        # Second message: the account interfaces finished counting.
-        zhihu_pending = false
-        speaker_label.text = "刘看山"
-        dialogue_label.text = "已经连上你的知乎账号%s。\n我能看到你的创作 %d 条、关注 %d 人、收藏夹 %d 个——都还只是索引，真正的问题还得你自己问。" % [
-            ("（" + name + "）") if not name.is_empty() else "",
-            int(counts.get("contents", 0)),
-            int(counts.get("followees", 0)),
-            int(counts.get("favlists", 0)),
-        ]
-    else:
-        speaker_label.text = "刘看山"
-        dialogue_label.text = "已经连上你的知乎账号%s。\n我正在翻你的创作、关注和收藏……" % [("（" + name + "）") if not name.is_empty() else ""]
-        zhihu_watch_until = Time.get_ticks_msec() + 30000
+    var counts: Dictionary = data.get("counts", {}) if data.get("counts") is Dictionary else {}
+    var headline := str(profile.get("headline", "")) if profile is Dictionary else ""
+    speaker_label.text = "刘看山"
+    dialogue_label.text = "已经连上你的知乎账号%s。\n我能看到你的创作 %d 条、关注 %d 人、收藏夹 %d 个——都只是索引，真正的问题还得你自己问。" % [
+        ("（" + name + "）") if not name.is_empty() else "",
+        int(counts.get("contents", 0)),
+        int(counts.get("followees", 0)),
+        int(counts.get("favlists", 0)),
+    ]
+    choice_hint_label.text = ("知乎：%s%s" % [name, (" · " + headline) if not headline.is_empty() else ""]) if not name.is_empty() else "知乎账号已连接"
     _update_status()
 
 func _on_save_pressed() -> void:

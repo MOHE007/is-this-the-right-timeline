@@ -76,6 +76,7 @@ function userRequestConfig(accessSecret, oauthToken, url) {
 
 export function createOAuth(config) {
   const sessions = new Map();
+  const handoffIndex = new Map();
   const oauthConfig = config.oauth;
   // Deployed instances read the callback URL from the platform env, so a URL
   // change never requires rebuilding the image; local runs fall back to the
@@ -103,11 +104,29 @@ export function createOAuth(config) {
 
   // A game page opening the flow in a popup only needs the result relayed back
   // to its own origin, so the service records where to send it.
-  function setRelay(request, response, { origin, mode }) {
+  function setRelay(request, response, { origin, mode, handoff }) {
     const current = session(request, response);
     current.popupOrigin = origin || null;
     current.mode = mode || null;
+    if (handoff) {
+      current.handoff = String(handoff).slice(0, 64);
+      handoffIndex.set(current.handoff, current);
+    }
     return current;
+  }
+
+  // Lets the game poll for the result of a flow it started, without relying on
+  // window.opener or postMessage (popups are often opened as plain tabs, which
+  // drops the opener) and without cross-origin cookies.
+  async function handoffResult(request, response, code) {
+    const current = code ? handoffIndex.get(code) : null;
+    if (!current) return { found: false, authorized: false };
+    if (current.handoffResult) return { ...current.handoffResult, found: true };
+    const summary = await summaryFor(current);
+    // Only cache a finished state: caching "not authorized yet" would make
+    // every later poll return that stale answer.
+    if (summary.authorized) current.handoffResult = summary;
+    return { ...summary, found: true };
   }
 
   function relay(request, response) {
@@ -123,8 +142,7 @@ export function createOAuth(config) {
     return { appKey, accessSecret };
   }
 
-  async function status(request, response) {
-    const current = session(request, response);
+  async function statusFor(current) {
     const creds = await credentials();
     if (current.expiresAt && current.expiresAt <= Date.now()) {
       current.token = null;
@@ -143,6 +161,10 @@ export function createOAuth(config) {
       error: current.error,
       interfaces: userInterfaces,
     };
+  }
+
+  async function status(request, response) {
+    return statusFor(session(request, response));
   }
 
   async function start(request, response) {
@@ -207,8 +229,7 @@ export function createOAuth(config) {
     } catch { current.profile = null; }
   }
 
-  async function runAll(request, response) {
-    const current = session(request, response);
+  async function runAllFor(current) {
     if (!current.token) throw Object.assign(new Error('请先完成知乎账号授权'), { code: 'LOGIN_REQUIRED' });
     const { accessSecret } = await credentials();
     if (!accessSecret) throw new Error('开放平台 Access Secret 未配置');
@@ -242,6 +263,10 @@ export function createOAuth(config) {
     return results;
   }
 
+  async function runAll(request, response) {
+    return runAllFor(session(request, response));
+  }
+
   function logout(request, response) {
     const current = session(request, response);
     current.token = null; current.expiresAt = null; current.profile = null; current.state = null; current.stateVerified = null; current.error = null;
@@ -253,9 +278,8 @@ export function createOAuth(config) {
 
   // Compact payload for the in-game panel: who is connected plus a count of
   // each account interface so the player sees the five integrations working.
-  async function summary(request, response) {
-    const current = session(request, response);
-    const base = await status(request, response);
+  async function summaryFor(current) {
+    const base = await statusFor(current);
     const payload = {
       authorized: base.authorized,
       profile: base.profile,
@@ -265,7 +289,7 @@ export function createOAuth(config) {
     };
     if (!base.authorized) return payload;
     try {
-      const results = await runAll(request, response);
+      const results = await runAllFor(current);
       for (const result of results) {
         const items = result.item?.Data?.Items ?? result.item?.data?.items;
         payload.counts[result.id] = Array.isArray(items) ? items.length : (result.item ? 1 : 0);
@@ -276,5 +300,9 @@ export function createOAuth(config) {
     return payload;
   }
 
-  return { status, start, callback, runAll, logout, record, setRelay, relay, summary };
+  async function summary(request, response) {
+    return summaryFor(session(request, response));
+  }
+
+  return { status, start, callback, runAll, logout, record, setRelay, relay, summary, handoffResult };
 }

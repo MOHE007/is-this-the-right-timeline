@@ -21,6 +21,12 @@ function headers(type = 'application/json; charset=utf-8') {
   };
 }
 function json(response, status, payload) { response.writeHead(status, headers()); response.end(JSON.stringify(payload)); }
+function jsonCors(request, response, payload) {
+  const origin = safeRelayOrigin(request.headers.origin) || '';
+  const extra = origin ? { 'Access-Control-Allow-Origin': origin, 'Vary': 'Origin' } : {};
+  response.writeHead(200, { ...headers(), ...extra });
+  response.end(JSON.stringify(payload));
+}
 function redirect(response, location) { response.writeHead(302, { Location: location, 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' }); response.end(); }
 
 // Only these origins may receive the postMessage relay, so the flow cannot be
@@ -44,10 +50,24 @@ const server = http.createServer(async (request, response) => {
     if (request.method === 'GET' && url.pathname === '/api/oauth/status') return json(response, 200, { ok: true, ...(await oauth.status(request, response)) });
     if (request.method === 'GET' && url.pathname === '/api/oauth/summary') return json(response, 200, { ok: true, ...(await oauth.summary(request, response)) });
     if (request.method === 'GET' && url.pathname === '/api/oauth/relay') return json(response, 200, { ok: true, ...oauth.relay(request, response) });
+    // Polled by the game itself (web and desktop) so the result does not
+    // depend on window.opener, postMessage or cross-origin cookies.
+    if (request.method === 'GET' && url.pathname === '/api/oauth/handoff') {
+      return jsonCors(request, response, { ok: true, ...(await oauth.handoffResult(request, response, url.searchParams.get('code'))) });
+    }
+    if (request.method === 'OPTIONS' && url.pathname === '/api/oauth/handoff') {
+      const origin = safeRelayOrigin(request.headers.origin) || '';
+      response.writeHead(204, {
+        'Access-Control-Allow-Origin': origin, 'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'content-type', 'Vary': 'Origin', 'Cache-Control': 'no-store',
+      });
+      return response.end();
+    }
     if (request.method === 'GET' && url.pathname === '/api/oauth/start') {
       const mode = url.searchParams.get('mode') === 'popup' ? 'popup' : null;
       const origin = safeRelayOrigin(url.searchParams.get('origin'));
-      if (mode) oauth.setRelay(request, response, { origin, mode });
+      const handoff = url.searchParams.get('handoff');
+      if (mode || handoff) oauth.setRelay(request, response, { origin, mode, handoff });
       try { return redirect(response, await oauth.start(request, response)); }
       catch (error) { oauth.record(request, response, error); return redirect(response, '/?oauth=error'); }
     }
