@@ -298,11 +298,19 @@ func _build_ui() -> void:
 
     _build_shan_sprite()
 
+    # Both panels sit on top of the scene artwork, which is light rice paper.
+    # Without their own dark plate, light text on it is close to unreadable.
+    var invest_plate := ColorRect.new()
+    invest_plate.color = Color(0.05, 0.06, 0.06, 0.74)
+    invest_plate.position = Vector2(16, 216)
+    invest_plate.size = Vector2(400, 292)
+    visual_panel.add_child(invest_plate)
+
     invest_title = Label.new()
     invest_title.position = Vector2(26, 226)
     invest_title.size = Vector2(380, 24)
-    invest_title.add_theme_font_size_override("font_size", 15)
-    invest_title.add_theme_color_override("font_color", Color("#d9d0b8"))
+    invest_title.add_theme_font_size_override("font_size", 16)
+    invest_title.add_theme_color_override("font_color", Color("#f2e9d8"))
     visual_panel.add_child(invest_title)
 
     invest_box = VBoxContainer.new()
@@ -311,11 +319,17 @@ func _build_ui() -> void:
     invest_box.add_theme_constant_override("separation", 6)
     visual_panel.add_child(invest_box)
 
+    var shan_plate := ColorRect.new()
+    shan_plate.color = Color(0.05, 0.06, 0.06, 0.74)
+    shan_plate.position = Vector2(806, 216)
+    shan_plate.size = Vector2(378, 292)
+    visual_panel.add_child(shan_plate)
+
     shan_title = Label.new()
     shan_title.position = Vector2(816, 226)
     shan_title.size = Vector2(360, 24)
-    shan_title.add_theme_font_size_override("font_size", 15)
-    shan_title.add_theme_color_override("font_color", Color("#8fb8c9"))
+    shan_title.add_theme_font_size_override("font_size", 16)
+    shan_title.add_theme_color_override("font_color", Color("#a8d0e0"))
     visual_panel.add_child(shan_title)
 
     shan_box = VBoxContainer.new()
@@ -328,7 +342,7 @@ func _build_ui() -> void:
     title_label.position = Vector2(62, 12)
     title_label.text = "这真的是对的时间线吗？  ·  Demo2 第一章 · 探索版"
     title_label.add_theme_font_size_override("font_size", 18)
-    title_label.add_theme_color_override("font_color", Color("#d9d0b8"))
+    title_label.add_theme_color_override("font_color", Color("#ece3cd"))
     add_child(title_label)
 
     year_label = Label.new()
@@ -336,7 +350,7 @@ func _build_ui() -> void:
     year_label.size = Vector2(180, 28)
     year_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
     year_label.add_theme_font_size_override("font_size", 18)
-    year_label.add_theme_color_override("font_color", Color("#c78b6b"))
+    year_label.add_theme_color_override("font_color", Color("#f0a878"))
     add_child(year_label)
 
     save_button = Button.new()
@@ -367,7 +381,7 @@ func _build_ui() -> void:
     scene_label.position = Vector2(62, 546)
     scene_label.size = Vector2(900, 20)
     scene_label.add_theme_font_size_override("font_size", 16)
-    scene_label.add_theme_color_override("font_color", Color("#b9c7c1"))
+    scene_label.add_theme_color_override("font_color", Color("#d6e2dc"))
     add_child(scene_label)
 
     dialogue_panel = PanelContainer.new()
@@ -402,6 +416,14 @@ func _build_ui() -> void:
     continue_button.pressed.connect(_advance)
     add_child(continue_button)
 
+    # Route buttons and their hint sit over the artwork too, so they get the
+    # same dark plate for readability.
+    var choice_plate := ColorRect.new()
+    choice_plate.color = Color(0.05, 0.06, 0.06, 0.72)
+    choice_plate.position = Vector2(866, 424)
+    choice_plate.size = Vector2(352, 196)
+    add_child(choice_plate)
+
     choices_box = VBoxContainer.new()
     choices_box.position = Vector2(880, 470)
     choices_box.size = Vector2(320, 130)
@@ -413,14 +435,14 @@ func _build_ui() -> void:
     choice_hint_label.size = Vector2(340, 34)
     choice_hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     choice_hint_label.add_theme_font_size_override("font_size", 12)
-    choice_hint_label.add_theme_color_override("font_color", Color("#c78b6b"))
+    choice_hint_label.add_theme_color_override("font_color", Color("#f0a878"))
     add_child(choice_hint_label)
 
     clue_label = Label.new()
     clue_label.position = Vector2(62, 700)
     clue_label.size = Vector2(800, 20)
     clue_label.add_theme_font_size_override("font_size", 13)
-    clue_label.add_theme_color_override("font_color", Color("#91aaa2"))
+    clue_label.add_theme_color_override("font_color", Color("#c3d8cf"))
     add_child(clue_label)
 
     status_label = Label.new()
@@ -428,7 +450,7 @@ func _build_ui() -> void:
     status_label.size = Vector2(340, 20)
     status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
     status_label.add_theme_font_size_override("font_size", 13)
-    status_label.add_theme_color_override("font_color", Color("#91aaa2"))
+    status_label.add_theme_color_override("font_color", Color("#c3d8cf"))
     add_child(status_label)
 
 func _build_shan_sprite() -> void:
