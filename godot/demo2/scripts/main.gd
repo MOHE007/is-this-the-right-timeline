@@ -19,6 +19,8 @@ const MANIFEST_PATH := "res://data/ch1/demo2_ch1_manifest_v01.json"
 const SHAN_PATH := "res://data/ch1/demo2_ch1_shan_answers_v02.json"
 const SAVE_PATH := "user://demo2_ch1_save_v02.json"
 const SHAN_SPRITE_ROOT := "res://assets/art/characters/liushan"
+# Deployed Zhihu Open Platform OAuth relay (see docs/product-plan.md §5.5).
+const ZHIHU_OAUTH_BASE := "https://ifesrjkdxats.cloud.sealos.io"
 # Scenes where Liu Kanshan's sprite stays hidden (pre-awakening prologue).
 const LIUSHAN_HIDDEN_SCENES := ["s01_modern_article", "s02_baby_home"]
 # UI_INK_DIALOGUE_FRAME is 1600x360 light rice-paper art: slice the ink border
@@ -101,6 +103,8 @@ var clue_label: Label
 var choice_hint_label: Label
 var save_button: Button
 var load_button: Button
+var zhihu_button: Button
+var zhihu_pending := false
 var bgm_player: AudioStreamPlayer
 var ambience_player: AudioStreamPlayer
 var sfx_players: Array[AudioStreamPlayer] = []
@@ -113,6 +117,10 @@ func _ready() -> void:
     _build_ui()
     _build_audio()
     _enter_scene(current_scene_id)
+
+func _process(_delta: float) -> void:
+    # Only does work while a Zhihu authorization popup is open.
+    _poll_zhihu_result()
 
 # ---------------------------------------------------------------- contracts
 
@@ -343,6 +351,15 @@ func _build_ui() -> void:
     load_button.disabled = not FileAccess.file_exists(SAVE_PATH)
     load_button.pressed.connect(_on_load_pressed)
     add_child(load_button)
+
+    # Zhihu account connection (OAuth). The service relays the result back so
+    # the game never has to call the platform API cross-origin.
+    zhihu_button = Button.new()
+    zhihu_button.text = "连接知乎"
+    zhihu_button.position = Vector2(560, 8)
+    zhihu_button.size = Vector2(130, 26)
+    zhihu_button.pressed.connect(_on_zhihu_pressed)
+    add_child(zhihu_button)
 
     scene_label = Label.new()
     scene_label.position = Vector2(62, 546)
@@ -1232,6 +1249,65 @@ func _open_card(url: String) -> void:
     choice_hint_label.text = "彩蛋卡片已在浏览器打开"
 
 # -------------------------------------------------------------- save points
+
+# ------------------------------------------------------------ zhihu account
+
+func _on_zhihu_pressed() -> void:
+    # The OAuth service handles the whole exchange; a popup reports back with
+    # postMessage so the game never issues a cross-origin API call.
+    var start_url := ZHIHU_OAUTH_BASE + "/api/oauth/start"
+    if not OS.has_feature("web"):
+        OS.shell_open(start_url)
+        choice_hint_label.text = "已在浏览器打开知乎授权页；授权完成后回到游戏即可继续。"
+        return
+    var origin := str(JavaScriptBridge.eval("window.location.origin"))
+    var url := "%s?mode=popup&origin=%s" % [start_url, origin.uri_encode()]
+    JavaScriptBridge.eval("""
+        window.__zhihuResult = null;
+        if (!window.__ithrttZhihuListener) {
+            window.__ithrttZhihuListener = true;
+            window.addEventListener('message', function (event) {
+                if (event && event.data && event.data.type === 'ithrtt-zhihu') {
+                    window.__zhihuResult = event.data;
+                }
+            });
+        }
+        window.open('%s', 'zhihu-oauth', 'width=520,height=700');
+    """ % url)
+    zhihu_pending = true
+    zhihu_button.text = "授权中…"
+    choice_hint_label.text = "已打开知乎授权窗口，请在新窗口完成授权。"
+
+func _poll_zhihu_result() -> void:
+    if not zhihu_pending or not OS.has_feature("web"):
+        return
+    var raw := str(JavaScriptBridge.eval("window.__zhihuResult ? JSON.stringify(window.__zhihuResult) : ''"))
+    if raw.is_empty():
+        return
+    zhihu_pending = false
+    JavaScriptBridge.eval("window.__zhihuResult = null;")
+    var data = JSON.parse_string(raw)
+    if not (data is Dictionary):
+        return
+    if str(data.get("status", "")) == "ok":
+        var name := str(data.get("name", ""))
+        var counts: Dictionary = data.get("counts", {}) if data.get("counts") is Dictionary else {}
+        zhihu_button.text = "知乎：" + (name if not name.is_empty() else "已连接")
+        zhihu_button.disabled = true
+        runtime["zhihu_connected"] = true
+        runtime["zhihu_name"] = name
+        speaker_label.text = "刘看山"
+        dialogue_label.text = "已经连上你的知乎账号%s。\n我能看到你的创作 %d 条、关注 %d 人、收藏夹 %d 个——都还只是索引，真正的问题还得你自己问。" % [
+            ("（" + name + "）") if not name.is_empty() else "",
+            int(counts.get("contents", 0)),
+            int(counts.get("followees", 0)),
+            int(counts.get("favlists", 0)),
+        ]
+        _update_status()
+    else:
+        zhihu_button.text = "连接知乎"
+        zhihu_button.disabled = false
+        choice_hint_label.text = "知乎授权未完成：" + str(data.get("message", "请重试"))
 
 func _on_save_pressed() -> void:
     if save_game():
