@@ -105,6 +105,7 @@ var save_button: Button
 var load_button: Button
 var zhihu_button: Button
 var zhihu_pending := false
+var zhihu_watch_until := 0
 var bgm_player: AudioStreamPlayer
 var ambience_player: AudioStreamPlayer
 var sfx_players: Array[AudioStreamPlayer] = []
@@ -1275,27 +1276,40 @@ func _on_zhihu_pressed() -> void:
         window.open('%s', 'zhihu-oauth', 'width=520,height=700');
     """ % url)
     zhihu_pending = true
+    zhihu_watch_until = 0
     zhihu_button.text = "授权中…"
     choice_hint_label.text = "已打开知乎授权窗口，请在新窗口完成授权。"
 
 func _poll_zhihu_result() -> void:
     if not zhihu_pending or not OS.has_feature("web"):
         return
+    # The popup relays the connection first and the account counts second, so
+    # keep watching for a while after the first message.
+    if zhihu_watch_until > 0 and Time.get_ticks_msec() > zhihu_watch_until:
+        zhihu_pending = false
+        return
     var raw := str(JavaScriptBridge.eval("window.__zhihuResult ? JSON.stringify(window.__zhihuResult) : ''"))
     if raw.is_empty():
         return
-    zhihu_pending = false
     JavaScriptBridge.eval("window.__zhihuResult = null;")
     var data = JSON.parse_string(raw)
     if not (data is Dictionary):
         return
-    if str(data.get("status", "")) == "ok":
-        var name := str(data.get("name", ""))
-        var counts: Dictionary = data.get("counts", {}) if data.get("counts") is Dictionary else {}
-        zhihu_button.text = "知乎：" + (name if not name.is_empty() else "已连接")
-        zhihu_button.disabled = true
-        runtime["zhihu_connected"] = true
-        runtime["zhihu_name"] = name
+    if str(data.get("status", "")) != "ok":
+        zhihu_pending = false
+        zhihu_button.text = "连接知乎"
+        zhihu_button.disabled = false
+        choice_hint_label.text = "知乎授权未完成：" + str(data.get("message", "请重试"))
+        return
+    var name := str(data.get("name", ""))
+    zhihu_button.text = "知乎：" + (name if not name.is_empty() else "已连接")
+    zhihu_button.disabled = true
+    runtime["zhihu_connected"] = true
+    runtime["zhihu_name"] = name
+    var counts = data.get("counts")
+    if counts is Dictionary:
+        # Second message: the account interfaces finished counting.
+        zhihu_pending = false
         speaker_label.text = "刘看山"
         dialogue_label.text = "已经连上你的知乎账号%s。\n我能看到你的创作 %d 条、关注 %d 人、收藏夹 %d 个——都还只是索引，真正的问题还得你自己问。" % [
             ("（" + name + "）") if not name.is_empty() else "",
@@ -1303,11 +1317,11 @@ func _poll_zhihu_result() -> void:
             int(counts.get("followees", 0)),
             int(counts.get("favlists", 0)),
         ]
-        _update_status()
     else:
-        zhihu_button.text = "连接知乎"
-        zhihu_button.disabled = false
-        choice_hint_label.text = "知乎授权未完成：" + str(data.get("message", "请重试"))
+        speaker_label.text = "刘看山"
+        dialogue_label.text = "已经连上你的知乎账号%s。\n我正在翻你的创作、关注和收藏……" % [("（" + name + "）") if not name.is_empty() else ""]
+        zhihu_watch_until = Time.get_ticks_msec() + 30000
+    _update_status()
 
 func _on_save_pressed() -> void:
     if save_game():
