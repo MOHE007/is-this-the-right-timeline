@@ -106,6 +106,7 @@ var load_button: Button
 var zhihu_button: Button
 var zhihu_pending := false
 var zhihu_watch_until := 0
+var zhihu_last_raw := ""
 var bgm_player: AudioStreamPlayer
 var ambience_player: AudioStreamPlayer
 var sfx_players: Array[AudioStreamPlayer] = []
@@ -1291,10 +1292,13 @@ func _poll_zhihu_result() -> void:
     var raw := str(JavaScriptBridge.eval("window.__zhihuResult ? JSON.stringify(window.__zhihuResult) : ''"))
     if raw.is_empty():
         return
-    JavaScriptBridge.eval("window.__zhihuResult = null;")
     var data = JSON.parse_string(raw)
     if not (data is Dictionary):
         return
+    if raw == zhihu_last_raw:
+        return
+    zhihu_last_raw = raw
+    JavaScriptBridge.eval("window.__ithrttZhihuState = 'seen:" + str(data.get("status", "?")) + "';")
     if str(data.get("status", "")) != "ok":
         zhihu_pending = false
         zhihu_button.text = "连接知乎"
@@ -1306,7 +1310,7 @@ func _poll_zhihu_result() -> void:
     zhihu_button.disabled = true
     runtime["zhihu_connected"] = true
     runtime["zhihu_name"] = name
-    JavaScriptBridge.eval("window.__ithrttZhihuState = 'ok:%s';" % name.replace("'", ""))
+    JavaScriptBridge.eval("window.__ithrttZhihuState = 'ok';")
     var counts = data.get("counts")
     if counts is Dictionary:
         # Second message: the account interfaces finished counting.
