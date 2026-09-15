@@ -1335,6 +1335,8 @@ func _on_zhihu_poll_completed(result: int, response_code: int, _headers: PackedS
             zhihu_pending = false
             zhihu_button.text = "连接知乎"
             choice_hint_label.text = "知乎授权超时，可以稍后再试。"
+            if OS.has_feature("web"):
+                JavaScriptBridge.eval("window.__ithrttZhihuState = 'timeout';")
         elif zhihu_pending:
             zhihu_button.text = "等待授权…"
         return
@@ -1343,6 +1345,8 @@ func _on_zhihu_poll_completed(result: int, response_code: int, _headers: PackedS
     zhihu_button.disabled = true
     runtime["zhihu_connected"] = true
     runtime["zhihu_name"] = name
+    if OS.has_feature("web"):
+        JavaScriptBridge.eval("window.__ithrttZhihuState = 'ok';")
     var counts: Dictionary = data.get("counts", {}) if data.get("counts") is Dictionary else {}
     var headline := str(profile.get("headline", "")) if profile is Dictionary else ""
     speaker_label.text = "刘看山"
