@@ -1306,6 +1306,7 @@ func _poll_zhihu_result() -> void:
     zhihu_button.disabled = true
     runtime["zhihu_connected"] = true
     runtime["zhihu_name"] = name
+    JavaScriptBridge.eval("window.__ithrttZhihuState = 'ok:%s';" % name.replace("'", ""))
     var counts = data.get("counts")
     if counts is Dictionary:
         # Second message: the account interfaces finished counting.
