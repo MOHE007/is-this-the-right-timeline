@@ -309,7 +309,7 @@ func _build_ui() -> void:
     # Both panels sit on top of the scene artwork, which is light rice paper.
     # Without their own dark plate, light text on it is close to unreadable.
     var invest_plate := ColorRect.new()
-    invest_plate.color = Color(0.05, 0.06, 0.06, 0.74)
+    invest_plate.color = Color(0.97, 0.96, 0.93, 0.62)
     invest_plate.position = Vector2(16, 216)
     invest_plate.size = Vector2(400, 292)
     visual_panel.add_child(invest_plate)
@@ -318,7 +318,7 @@ func _build_ui() -> void:
     invest_title.position = Vector2(26, 226)
     invest_title.size = Vector2(380, 24)
     invest_title.add_theme_font_size_override("font_size", 16)
-    invest_title.add_theme_color_override("font_color", Color("#f2e9d8"))
+    invest_title.add_theme_color_override("font_color", Color("#1f1e1c"))
     visual_panel.add_child(invest_title)
 
     invest_box = VBoxContainer.new()
@@ -328,7 +328,7 @@ func _build_ui() -> void:
     visual_panel.add_child(invest_box)
 
     var shan_plate := ColorRect.new()
-    shan_plate.color = Color(0.05, 0.06, 0.06, 0.74)
+    shan_plate.color = Color(0.97, 0.96, 0.93, 0.62)
     shan_plate.position = Vector2(806, 216)
     shan_plate.size = Vector2(378, 292)
     visual_panel.add_child(shan_plate)
@@ -337,7 +337,7 @@ func _build_ui() -> void:
     shan_title.position = Vector2(816, 226)
     shan_title.size = Vector2(360, 24)
     shan_title.add_theme_font_size_override("font_size", 16)
-    shan_title.add_theme_color_override("font_color", Color("#a8d0e0"))
+    shan_title.add_theme_color_override("font_color", Color("#16262f"))
     visual_panel.add_child(shan_title)
 
     shan_box = VBoxContainer.new()
@@ -427,7 +427,7 @@ func _build_ui() -> void:
     # Route buttons and their hint sit over the artwork too, so they get the
     # same dark plate for readability.
     var choice_plate := ColorRect.new()
-    choice_plate.color = Color(0.05, 0.06, 0.06, 0.72)
+    choice_plate.color = Color(0.97, 0.96, 0.93, 0.62)
     choice_plate.position = Vector2(866, 424)
     choice_plate.size = Vector2(352, 196)
     add_child(choice_plate)
@@ -554,6 +554,32 @@ func _render_scene(scene: Dictionary) -> void:
 
 # -------------------------------------------------------------------- audio
 
+func _style_ink_button(button: Button, accent: bool = false) -> void:
+    # Paper-styled buttons so panel controls sit on the rice-paper plates
+    # instead of reading as heavy dark blocks.
+    var normal := StyleBoxFlat.new()
+    normal.bg_color = Color(0.99, 0.98, 0.95, 0.88)
+    normal.border_color = Color(0.62, 0.57, 0.48, 0.9) if not accent else Color(0.72, 0.40, 0.26, 0.9)
+    normal.set_border_width_all(1)
+    normal.set_corner_radius_all(3)
+    var hover := normal.duplicate()
+    hover.bg_color = Color(1, 0.99, 0.96, 1.0)
+    hover.border_color = Color(0.80, 0.45, 0.28, 1.0)
+    var pressed := normal.duplicate()
+    pressed.bg_color = Color(0.90, 0.87, 0.80, 1.0)
+    var disabled := normal.duplicate()
+    disabled.bg_color = Color(0.84, 0.82, 0.75, 0.90)
+    disabled.border_color = Color(0.66, 0.62, 0.55, 0.8)
+    button.add_theme_stylebox_override("normal", normal)
+    button.add_theme_stylebox_override("hover", hover)
+    button.add_theme_stylebox_override("pressed", pressed)
+    button.add_theme_stylebox_override("disabled", disabled)
+    button.add_theme_stylebox_override("focus", hover)
+    button.add_theme_color_override("font_color", Color("#1f1e1c"))
+    button.add_theme_color_override("font_hover_color", Color("#1b1a18"))
+    button.add_theme_color_override("font_pressed_color", Color("#1b1a18"))
+    button.add_theme_color_override("font_disabled_color", Color("#2a2822"))
+
 func _build_audio() -> void:
     bgm_player = AudioStreamPlayer.new()
     bgm_player.bus = "Master"
@@ -653,6 +679,7 @@ func _render_investigation(scene: Dictionary) -> void:
         if group_locked:
             button.tooltip_text = "你已在此处做出取舍，机会不再。"
         button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+        _style_ink_button(button)
         button.pressed.connect(_on_investigate_pressed.bind(object_id))
         invest_box.add_child(button)
 
@@ -730,6 +757,7 @@ func _render_shan(scene: Dictionary) -> void:
         button.custom_minimum_size = Vector2(360, 38)
         button.alignment = HORIZONTAL_ALIGNMENT_LEFT
         button.disabled = answered
+        _style_ink_button(button, true)
         button.pressed.connect(_on_shan_pressed.bind(prompt_id))
         shan_box.add_child(button)
 
@@ -862,6 +890,7 @@ func _show_beat(beat: Dictionary) -> void:
                 button.tooltip_text = "还缺：" + missing_text
                 if first_locked_hint.is_empty():
                     first_locked_hint = "『%s』还缺：%s" % [str(choice.get("label", "")), missing_text]
+            _style_ink_button(button, true)
             button.pressed.connect(_choose.bind(choice))
             choices_box.add_child(button)
         if not first_locked_hint.is_empty():
