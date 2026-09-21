@@ -19,7 +19,10 @@ const MANIFEST_PATH := "res://data/ch1/demo2_ch1_manifest_v01.json"
 const SHAN_PATH := "res://data/ch1/demo2_ch1_shan_answers_v02.json"
 const SAVE_PATH := "user://demo2_ch1_save_v02.json"
 const SHAN_SPRITE_ROOT := "res://assets/art/characters/liushan"
-# Deployed Zhihu Open Platform OAuth relay (see docs/product-plan.md §5.5).
+# Zhihu Open Platform login is disabled: the hosted OAuth relay ran out of
+# quota and the entry would be a dead button. Flip this to true and restore the
+# service to bring it back (code below is intact).
+const ZHIHU_LOGIN_ENABLED := false
 const ZHIHU_OAUTH_BASE := "https://ifesrjkdxats.cloud.sealos.io"
 # Scenes where Liu Kanshan's sprite stays hidden (pre-awakening prologue).
 const LIUSHAN_HIDDEN_SCENES := ["s01_modern_article", "s02_baby_home"]
@@ -125,7 +128,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
     # Only does work while a Zhihu authorization is in flight.
-    if not zhihu_pending:
+    if not ZHIHU_LOGIN_ENABLED or not zhihu_pending:
         return
     zhihu_poll_accum += delta
     if zhihu_poll_accum >= 2.0:
@@ -378,12 +381,15 @@ func _build_ui() -> void:
 
     # Zhihu account connection (OAuth). The service relays the result back so
     # the game never has to call the platform API cross-origin.
-    zhihu_button = Button.new()
-    zhihu_button.text = "连接知乎"
-    zhihu_button.position = Vector2(560, 8)
-    zhihu_button.size = Vector2(130, 26)
-    zhihu_button.pressed.connect(_on_zhihu_pressed)
-    add_child(zhihu_button)
+    # 知乎账号登录暂时下线（后端配额用尽）。恢复方式：把 ZHIHU_LOGIN_ENABLED
+    # 改回 true，并确保 OAuth 服务可用。见 docs/product-plan.md §5.5。
+    if ZHIHU_LOGIN_ENABLED:
+        zhihu_button = Button.new()
+        zhihu_button.text = "连接知乎"
+        zhihu_button.position = Vector2(560, 8)
+        zhihu_button.size = Vector2(130, 26)
+        zhihu_button.pressed.connect(_on_zhihu_pressed)
+        add_child(zhihu_button)
 
     scene_label = Label.new()
     scene_label.position = Vector2(62, 546)
