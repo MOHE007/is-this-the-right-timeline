@@ -84,6 +84,15 @@ is-this-the-right-timeline/
 └── godot/.gitkeep                 # Godot 4.x 工程预留
 ```
 
+### 素材原件放在哪里
+
+代码仓库只保存**代码与小配置**。体积大的素材原件（美术包 70MB、音频母版 50MB、
+卡片工程源 58MB 等）归档在**私有仓库** `MOHE007/ithrtt-assets`，**开发游戏不需要它**——
+运行时用到的资源已经是优化后的 WebP / OGG，就在本仓库 `godot/demo2/assets/` 下。
+
+需要重制素材（换尺寸、换压缩、改 3D 模型）时才去私有仓库取原件；取用与恢复流程见
+该仓库的 `README.md`。
+
 ## 🛠 技术路线
 
 - **目标引擎**：Godot 4.x + GDScript，最终导出 Web。
