@@ -13,3 +13,8 @@ qa-*/
 *.pdf
 *.zip
 *.import
+
+# 例外：论文的 Word/PDF 导出是交付物本身，需要随仓库分发
+# （源码仍以 docs/papers/*.md 为准，二进制只是排版产物）
+!docs/papers/*.docx
+!docs/papers/*.pdf
