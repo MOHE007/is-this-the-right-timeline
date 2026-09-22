@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "id": "demo2_ch1_manifest",
-  "version": "v01.4",
+  "version": "v01.5",
   "title": "第一章南宋意难平｜资源清单",
   "runtime": "godot-4-web",
   "state": "demo2_ch1_state_v01.json",
@@ -400,6 +400,21 @@
         "type": "audio",
         "path": "res://assets/audio/sfx/AUD_SFX_WATER_ROPE_01_v01.ogg",
         "status": "integrated"
+      },
+      "CHAR_MILITARY_COMPANION": {
+        "type": "texture",
+        "path": "res://assets/art/characters/CHAR_MILITARY_COMPANION_v01.webp",
+        "status": "integrated"
+      },
+      "CHAR_PLAYER_HAND": {
+        "type": "texture",
+        "path": "res://assets/art/characters/CHAR_PLAYER_HAND_v01.webp",
+        "status": "integrated"
+      },
+      "FX_RED_INK_SPREAD": {
+        "type": "texture",
+        "path": "res://assets/art/fx/FX_RED_INK_SPREAD_v01.webp",
+        "status": "integrated"
       }
     },
     "character_by_speaker": {
@@ -409,8 +424,8 @@
       "岳飞": "CHAR_YUEFEI_BACK",
       "辛弃疾": "CHAR_XINQiji_YOUNG",
       "刘看山": "CHAR_LIUSHAN_WHITE",
-      "军中同伴": null,
-      "玩家": null
+      "军中同伴": "CHAR_MILITARY_COMPANION",
+      "玩家": "CHAR_PLAYER_HAND"
     },
     "prop_by_clue": {
       "family_letter": "PROP_LETTER_UNSENT",
@@ -428,12 +443,8 @@
       "cursor": "UI_CURSOR_INK",
       "timeline_seal": "UI_SEAL_TIMELINE"
     },
-    "missing_p1": [
-      "CHAR_PLAYER_HAND",
-      "CHAR_MILITARY_COMPANION",
-      "FX_RED_INK_SPREAD"
-    ],
-    "source_note": "超级真蛋（梁博森）交付 2026-09-14：项目图片(1).zip（PNG 原图 1920x1080/1024x1536），运行时转 WebP q90 入库 assets/art/",
+    "missing_p1": [],
+    "source_note": "超级真蛋（梁博森）交付 2026-09-14：项目图片(1).zip（PNG 原图 1920x1080/1024x1536），运行时转 WebP q90 入库 assets/art/；补充件（军中同伴/玩家手/红墨扩散）于 2026-09-21 接入",
     "audio_scene_map": {
       "s01_modern_article": {
         "bgm": null,
