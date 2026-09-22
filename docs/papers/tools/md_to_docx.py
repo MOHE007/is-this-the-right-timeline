@@ -112,6 +112,7 @@ def convert(md_path: Path, docx_path: Path) -> None:
     code_buffer: list[str] = []
     in_frontmatter = False
     table_buffer: list[list[str]] = []
+    last_heading = [0]  # 上一个标题的层级（用于识别 h1 后的副标题）
 
     def flush_table():
         nonlocal table_buffer
@@ -191,14 +192,30 @@ def convert(md_path: Path, docx_path: Path) -> None:
         if m:
             level, text = len(m.group(1)), m.group(2)
             sizes = {1: 20, 2: 15, 3: 12.5, 4: 11.5}
-            p = doc.add_paragraph()
+            # 紧跟在 h1 之后的 h3 是副标题（"——以……为例"）：它不是章节标题，
+            # 若按 Heading 3 输出会以"3 级标题"混进 Word 导航窗格，故单独居中排版。
+            if level == 3 and last_heading[0] == 1:
+                p = doc.add_paragraph()
+                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                p.paragraph_format.space_after = Pt(18)
+                run = p.add_run(text)
+                set_run_font(run, ea=HEAD_FONT_EA, size=11.5, bold=False,
+                             color=RGBColor(0x6B, 0x62, 0x59))
+                last_heading[0] = level
+                i += 1
+                continue
+            # 用真正的 Heading 样式：Word 才能生成导航窗格与大纲结构
+            # （普通段落做标题会让长篇文档无法跳转）。字体与配色在 run 层
+            # 显式覆盖，保证与 PDF 的观感一致。
+            p = doc.add_paragraph(style=f"Heading {min(level, 4)}")
             p.paragraph_format.space_before = Pt(14 if level <= 2 else 10)
             p.paragraph_format.space_after = Pt(6)
             if level == 1:
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
             run = p.add_run(text)
             set_run_font(run, ea=HEAD_FONT_EA, size=sizes.get(level, 11), bold=True,
-                         color=ACCENT if level <= 2 else None)
+                         color=ACCENT if level <= 2 else RGBColor(0x3A, 0x37, 0x33))
+            last_heading[0] = level
             i += 1
             continue
 
@@ -225,7 +242,17 @@ def convert(md_path: Path, docx_path: Path) -> None:
             continue
         m = re.match(r"^(\d+)\.\s+(.*)$", stripped)
         if m:
-            p = doc.add_paragraph(style="List Number")
+            # 不使用 "List Number" 样式：python-docx 默认模板中该样式的所有段落
+            # 共用同一个 style 级 numId，Word 会**跨节连续编号**——本文 §3.5 的
+            # 1-3 之后，§7.1 会接着从 4 开始、§8.3 从 16 开始，而论文每一节都
+            # 必须从 1 重新计数。因此改为「字面序号 + 悬挂缩进」，编号完全由
+            # Markdown 原文决定，不依赖 Word 的编号定义。
+            p = doc.add_paragraph()
+            p.paragraph_format.left_indent = Cm(0.85)
+            p.paragraph_format.first_line_indent = Cm(-0.85)
+            p.paragraph_format.space_after = Pt(3)
+            run = p.add_run(f"{m.group(1)}. ")
+            set_run_font(run, ea=HEAD_FONT_EA, size=10.5)
             add_inline(p, m.group(2))
             i += 1
             continue

@@ -23,6 +23,8 @@ body {
   font-family: "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", serif;
   font-size: 10.5pt; line-height: 1.75; color: #1b1a18;
   margin: 0; padding: 0;
+  /* 参考文献含长 URL，必须允许任意位置断行，否则横向溢出页面 */
+  overflow-wrap: break-word; word-break: break-word;
 }
 /* 字体栈经探针实测（本机缺失 PingFang SC / Hiragino 与 Chrome 不匹配）：
    只有 "Heiti SC" 能在 Chrome 打印时提供粗字面 STHeitiSC-Medium，
