@@ -110,6 +110,22 @@ is-this-the-right-timeline/
 
 `zhihu-oauth/` 是按官方 `zhihu-hackathon-skill_v2026s2` 初始化的独立 Node OAuth 服务。OAuth 后端优先使用 Render Free，Godot 游戏静态包继续使用 GitHub Pages。初始化、Secrets、回调和免费部署步骤见 [`docs/production/zhihu_oauth_free_deployment_v01.md`](docs/production/zhihu_oauth_free_deployment_v01.md)。
 
+## 📄 项目复盘论文
+
+[《多智能体协作下的叙事游戏工程实践》](docs/papers/multi-agent-narrative-game-engineering.md) —
+本项目的完整工程复盘：创作思路的理论框架、三层契约与数据驱动运行时、多 AI 协作架构与审校闭环、
+工具能力矩阵，以及 **12 条可复刻实践、5 条反模式、4 条真实弯路**。全文 53 条参考文献。
+
+> **为什么值得一读**：本文写的不是"我们做成了什么"，而是**"什么做法真的起了作用、什么做法看起来对但实际失效"**。
+> §8.2 的四条弯路（CDN 缓存错配导致产物打不开、把签名失效误判为内存不足、按文件名核对交付物、多 AI 共用工作区）是最难通过正向描述传递的部分。
+
+| 格式 | 链接 |
+| --- | --- |
+| 正文（Markdown，GitHub 可直接阅读） | [multi-agent-narrative-game-engineering.md](docs/papers/multi-agent-narrative-game-engineering.md) |
+| PDF（A4 19 页，已嵌入中文字体） | [multi-agent-narrative-game-engineering.pdf](docs/papers/multi-agent-narrative-game-engineering.pdf) |
+| Word（含导航大纲，可编辑） | [multi-agent-narrative-game-engineering.docx](docs/papers/multi-agent-narrative-game-engineering.docx) |
+| 文档导出工具链 | [docs/papers/tools/](docs/papers/tools/) |
+
 ## 🗺 Roadmap
 
 | 里程碑 | 状态 | 交付物 |
