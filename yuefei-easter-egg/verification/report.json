@@ -1,0 +1,186 @@
+{
+  "target": "/Users/mac/Downloads/比赛用/yuefei-easter-egg",
+  "base": "http://127.0.0.1:60528/",
+  "browser": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "passes": {
+    "desktop": {
+      "checks": [
+        {
+          "name": "viewer ready (WebGL path, not the CSS fallback)",
+          "pass": true,
+          "detail": "{\"ready\":true,\"fallback\":false,\"error\":null}"
+        },
+        {
+          "name": "card metadata rendered",
+          "pass": true,
+          "detail": "岳飞 / 南宋 · 精忠报国 / 彩蛋 001 / 001"
+        },
+        {
+          "name": "exported model reached the page",
+          "pass": true,
+          "detail": "./assets/card.glb"
+        },
+        {
+          "name": "image layers uploaded at one shared canvas",
+          "pass": true,
+          "detail": "{\"subject\":[1024,1536],\"background\":[1024,1536],\"text\":[1024,1536],\"line\":[1024,1536],\"effects\":[1024,1536]}"
+        },
+        {
+          "name": "page starts from card-config.json depths",
+          "pass": true,
+          "detail": "depth 0.42/0.42, bg -0.25/-0.25, fx 0.58, foil 0.72"
+        },
+        {
+          "name": "idle motion animates the card",
+          "pass": true,
+          "detail": "4f6553b340ba69f3 -> 5317212d20716d1d"
+        },
+        {
+          "name": "auto motion reports on",
+          "pass": true
+        },
+        {
+          "name": "drag turns the card both directions",
+          "pass": true,
+          "detail": "y -0.133 -> 0.647 / -0.649"
+        },
+        {
+          "name": "vertical drag tilts the card",
+          "pass": true,
+          "detail": "x -0.031 -> 0.322 / -0.358"
+        },
+        {
+          "name": "both tilt directions render differently",
+          "pass": true,
+          "detail": "d3048b76e8b8adbd vs b7ad02dd256c148f"
+        },
+        {
+          "name": "drag stops auto motion",
+          "pass": true
+        },
+        {
+          "name": "wheel zooms in and out",
+          "pass": true,
+          "detail": "1 -> 1.05 -> 0.82"
+        },
+        {
+          "name": "flip to the back works",
+          "pass": true,
+          "detail": "flipped=true"
+        },
+        {
+          "name": "view label follows the flip",
+          "pass": true
+        },
+        {
+          "name": "flip back to the front works",
+          "pass": true
+        },
+        {
+          "name": "reset returns to the study pose and un-flips",
+          "pass": true,
+          "detail": "rot [-0.033,-0.145,0] zoom=1 flipped=false"
+        },
+        {
+          "name": "keyboard arrows nudge the card",
+          "pass": true,
+          "detail": "[-0.092,-0.072,0]"
+        },
+        {
+          "name": "景深调整 panel toggles",
+          "pass": true,
+          "detail": "{\"before\":false,\"after\":true}"
+        },
+        {
+          "name": "画面比例: slider drives the uniform and the rendered frame",
+          "pass": true,
+          "detail": "uniform 1.25 -> 1.15 (control -> 1.15, readout 1.15), frame cd49cfc309415a8d -> 0e30e6eebb7cd8eb"
+        },
+        {
+          "name": "画面景深: slider drives the uniform and the rendered frame",
+          "pass": true,
+          "detail": "uniform 0.42 -> 0 (control -> 0, readout 0.00), frame 1bfe6e72e44c7fbc -> a6d0334f07528945"
+        },
+        {
+          "name": "特效景深: slider drives the uniform and the rendered frame",
+          "pass": true,
+          "detail": "uniform 0.58 -> 0.3 (control -> 0.3, readout 0.30), frame 9818200753c3a0c6 -> a8dd5d30527c52d1"
+        },
+        {
+          "name": "底纹景深: slider drives the uniform and the rendered frame",
+          "pass": true,
+          "detail": "uniform -0.25 -> 0 (control -> 0, readout 0.00), frame 568c4d852bb5c860 -> a3bf358a2354e702"
+        },
+        {
+          "name": "光泽 / 镭射: slider drives the uniform and the rendered frame",
+          "pass": true,
+          "detail": "uniform 0.72 -> 0.5 (control -> 0.5, readout 50%), frame 25bba86894dd447b -> e76e9524b0e125f9"
+        },
+        {
+          "name": "all four finishes switch the material",
+          "pass": true,
+          "detail": "珠光=0 银箔=1 烫金=3 原画=2"
+        },
+        {
+          "name": "no console errors or exceptions",
+          "pass": true,
+          "detail": "clean"
+        },
+        {
+          "name": "no failed asset requests",
+          "pass": true,
+          "detail": "clean"
+        },
+        {
+          "name": "screenshot button downloads a card PNG",
+          "pass": true,
+          "detail": "got 岳飞-front.png"
+        }
+      ],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "downloads": [
+        "岳飞-front.png"
+      ]
+    },
+    "mobile": {
+      "checks": [
+        {
+          "name": "viewer ready at 390x844",
+          "pass": true,
+          "detail": "{\"ready\":true,\"fallback\":false,\"error\":null}"
+        },
+        {
+          "name": "narrow viewport has no horizontal overflow",
+          "pass": true,
+          "detail": "innerWidth=390 scrollWidth=390"
+        },
+        {
+          "name": "card still renders at the narrow width",
+          "pass": true,
+          "detail": "岳飞, canvas 390x472"
+        },
+        {
+          "name": "reduced motion: auto motion off and shader clock pinned",
+          "pass": true,
+          "detail": "{\"match\":true,\"auto\":false,\"t\":0}"
+        },
+        {
+          "name": "reduced motion keeps the card still",
+          "pass": true,
+          "detail": "frame acd9834354e602ad -> acd9834354e602ad over 1.2s"
+        },
+        {
+          "name": "no console errors on mobile",
+          "pass": true,
+          "detail": "clean"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "total": 33,
+    "passed": 33,
+    "failed": 0
+  }
+}

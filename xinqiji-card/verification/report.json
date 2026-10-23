@@ -1,0 +1,186 @@
+{
+  "target": "/Users/mac/Downloads/比赛用/xinqiji-card",
+  "base": "http://127.0.0.1:65199/",
+  "browser": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "passes": {
+    "desktop": {
+      "checks": [
+        {
+          "name": "viewer ready (WebGL path, not the CSS fallback)",
+          "pass": true,
+          "detail": "{\"ready\":true,\"fallback\":false,\"error\":null}"
+        },
+        {
+          "name": "card metadata rendered",
+          "pass": true,
+          "detail": "辛弃疾 / 南宋 · 壮志未酬 / 彩蛋 002 / 002"
+        },
+        {
+          "name": "exported model reached the page",
+          "pass": true,
+          "detail": "./assets/card.glb"
+        },
+        {
+          "name": "image layers uploaded at one shared canvas",
+          "pass": true,
+          "detail": "{\"subject\":[1024,1536],\"background\":[1024,1536],\"text\":[1024,1536],\"line\":[1024,1536],\"effects\":[1024,1536]}"
+        },
+        {
+          "name": "page starts from card-config.json depths",
+          "pass": true,
+          "detail": "depth 0.42/0.42, bg -0.25/-0.25, fx 0.58, foil 0.72"
+        },
+        {
+          "name": "idle motion animates the card",
+          "pass": true,
+          "detail": "6b6b0bc27c9ce8af -> 295bd1e0941e6006"
+        },
+        {
+          "name": "auto motion reports on",
+          "pass": true
+        },
+        {
+          "name": "drag turns the card both directions",
+          "pass": true,
+          "detail": "y -0.058 -> 0.627 / -0.642"
+        },
+        {
+          "name": "vertical drag tilts the card",
+          "pass": true,
+          "detail": "x -0.012 -> 0.303 / -0.349"
+        },
+        {
+          "name": "both tilt directions render differently",
+          "pass": true,
+          "detail": "e1ce4148e4d99f81 vs d3b93b414c1256c0"
+        },
+        {
+          "name": "drag stops auto motion",
+          "pass": true
+        },
+        {
+          "name": "wheel zooms in and out",
+          "pass": true,
+          "detail": "1 -> 1.05 -> 0.82"
+        },
+        {
+          "name": "flip to the back works",
+          "pass": true,
+          "detail": "flipped=true"
+        },
+        {
+          "name": "view label follows the flip",
+          "pass": true
+        },
+        {
+          "name": "flip back to the front works",
+          "pass": true
+        },
+        {
+          "name": "reset returns to the study pose and un-flips",
+          "pass": false,
+          "detail": "rot [0.044,0.083,0] zoom=1 flipped=false"
+        },
+        {
+          "name": "keyboard arrows nudge the card",
+          "pass": true,
+          "detail": "[-0.085,-0.069,0]"
+        },
+        {
+          "name": "景深调整 panel toggles",
+          "pass": true,
+          "detail": "{\"before\":false,\"after\":true}"
+        },
+        {
+          "name": "画面比例: slider drives the uniform and the rendered frame",
+          "pass": true,
+          "detail": "uniform 1.25 -> 1.15 (control -> 1.15, readout 1.15), frame 70235f4dd81b6243 -> 8fbc29c7714ebd92"
+        },
+        {
+          "name": "画面景深: slider drives the uniform and the rendered frame",
+          "pass": true,
+          "detail": "uniform 0.42 -> 0 (control -> 0, readout 0.00), frame 5d39a7fa291197c1 -> daa72de3a955cfeb"
+        },
+        {
+          "name": "特效景深: slider drives the uniform and the rendered frame",
+          "pass": true,
+          "detail": "uniform 0.58 -> 0.3 (control -> 0.3, readout 0.30), frame 47ddae50be5d57ef -> afbcdf0a9c059236"
+        },
+        {
+          "name": "底纹景深: slider drives the uniform and the rendered frame",
+          "pass": true,
+          "detail": "uniform -0.25 -> 0 (control -> 0, readout 0.00), frame 0fb2ec385ff5065f -> d7636e685413cac9"
+        },
+        {
+          "name": "光泽 / 镭射: slider drives the uniform and the rendered frame",
+          "pass": true,
+          "detail": "uniform 0.72 -> 0.5 (control -> 0.5, readout 50%), frame ab4ec17b94249334 -> e8e41679c92e6697"
+        },
+        {
+          "name": "all four finishes switch the material",
+          "pass": true,
+          "detail": "珠光=0 银箔=1 烫金=3 原画=2"
+        },
+        {
+          "name": "no console errors or exceptions",
+          "pass": true,
+          "detail": "clean"
+        },
+        {
+          "name": "no failed asset requests",
+          "pass": true,
+          "detail": "clean"
+        },
+        {
+          "name": "screenshot button downloads a card PNG",
+          "pass": true,
+          "detail": "got 辛弃疾-front.png"
+        }
+      ],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "downloads": [
+        "辛弃疾-front.png"
+      ]
+    },
+    "mobile": {
+      "checks": [
+        {
+          "name": "viewer ready at 390x844",
+          "pass": true,
+          "detail": "{\"ready\":true,\"fallback\":false,\"error\":null}"
+        },
+        {
+          "name": "narrow viewport has no horizontal overflow",
+          "pass": true,
+          "detail": "innerWidth=390 scrollWidth=390"
+        },
+        {
+          "name": "card still renders at the narrow width",
+          "pass": true,
+          "detail": "辛弃疾, canvas 390x472"
+        },
+        {
+          "name": "reduced motion: auto motion off and shader clock pinned",
+          "pass": true,
+          "detail": "{\"match\":true,\"auto\":false,\"t\":0}"
+        },
+        {
+          "name": "reduced motion keeps the card still",
+          "pass": true,
+          "detail": "frame 6556e081066832cc -> 6556e081066832cc over 1.2s"
+        },
+        {
+          "name": "no console errors on mobile",
+          "pass": true,
+          "detail": "clean"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "total": 33,
+    "passed": 32,
+    "failed": 1
+  }
+}

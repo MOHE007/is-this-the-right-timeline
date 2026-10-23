@@ -1,0 +1,28 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "artifact_9022a7da05e42162d926cfcc",
+      "current_revision_id": "revision_43ae5fde1e02a6601e39aa02",
+      "filename": "游戏音效与BGM素材清单.md",
+      "kind": "document",
+      "mime": "text/markdown",
+      "rel_path": "游戏音效与BGM素材清单.md",
+      "revisions": [
+        {
+          "artifact_revision_id": "revision_43ae5fde1e02a6601e39aa02",
+          "produced_at": "2026-09-14T19:41:21+08:00",
+          "sha256": "62585e02cec90ec8d91b11af6b6641155ca001e0915c58eec51c4d752e921803",
+          "size": 8704,
+          "turn_id": "local_1789385930865_g6kpf08e"
+        }
+      ]
+    }
+  ],
+  "created_at": "2026-09-14T11:38:51.228766+00:00",
+  "current_turn_id": "local_1789386188899_uvml9t9t",
+  "execution_status": "completed",
+  "schema_version": 3,
+  "session_id": "dab6ff00-5415-4f07-80a5-2096951898aa",
+  "task_id": "task_1789385930866_85uxl61t",
+  "updated_at": "2026-09-14T11:48:48.833641+00:00"
+}
